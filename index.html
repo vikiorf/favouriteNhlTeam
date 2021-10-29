@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="app.js" defer></script>
-  <title>NHL</title>
-</head>
-<body>
-  <article id="choose-team-screen">
-    <h1>Choose team</h1>
-    <form id="select-team-form">
-      <select name="team-select" id="team-select"></select>
-      <input type="submit" value="Go" id="choose-team">
-    </form>
-  </article>
-  <article id="team-screen" style="display: none;">
-    <ul>
-      <li id="previous-game">Previous game</li>
-      <li id="next-game">Next game</li>
-    </ul>
-  </article>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="app.js" defer></script>
+    <link rel="stylesheet" href="./index.css">
+    <title>Favourite Team</title>
+  </head>
+  <body>
+    <article id="choose-team-screen" style="display: none">
+      <h1 id="choose-team-heading">Choose team</h1>
+      <form id="select-team-form">
+        <select name="team-select" id="team-select"></select>
+        <input type="submit" value="Go" id="choose-team" />
+      </form>
+    </article>
+    <article id="team-screen" style="display: none">
+      <div>
+        <img src="./assets/settings.png" alt="Settings" id="settings-button"/>
+        <h1 id="chosen-team">Chosen Team</h1>
+      </div>
+      <ul id="game-list">
+        <li class="game-item" id="previous-game">Previous game</li>
+        <li class="game-item" id="next-game">Next game</li>
+      </ul>
+    </article>
+  </body>
 </html>

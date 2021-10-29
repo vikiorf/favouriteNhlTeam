@@ -42,40 +42,33 @@ var selectTeamForm = document.querySelector('#select-team-form');
 var teamSelectEl = document.querySelector('#team-select');
 var previousGameLiEl = document.querySelector('#previous-game');
 var nextGameLiEl = document.querySelector('#next-game');
-var homeTeamData;
-var awayTeamData;
-fetch('https://statsapi.web.nhl.com/api/v1/teams/14?expand=team.schedule.next&expand=team.schedule.previous')
-    .then(function (res) { return res.json(); })
-    .then(function (res) {
-    // console.log(res)
-});
-fetch('https://statsapi.web.nhl.com/api/v1/standings')
-    .then(function (res) { return res.json(); })
-    .then(function (res) {
-    console.log('standings', res);
-});
-function hej() {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, fetch('https://statsapi.web.nhl.com/api/v1/game/2021020102/feed/live')
-                        .then(function (res) { return res.json(); })
-                        .then(function (res) {
-                        // console.log(res)
-                        // console.log(res.liveData.boxscore.teams)
-                        homeTeamData = res.liveData.boxscore.teams.home;
-                        awayTeamData = res.liveData.boxscore.teams.away;
-                    })
-                    // console.log(homeTeamData.teamStats)
-                    // console.log(awayTeamData.teamStats)
-                ];
-                case 1:
-                    _a.sent();
-                    return [2 /*return*/];
-            }
+var settingsButtonEl = document.querySelector('#settings-button');
+var chosenTeamH1El = document.querySelector('#chosen-team');
+var UserInfo = /** @class */ (function () {
+    function UserInfo() {
+    }
+    UserInfo.prototype.setFavouriteTeam = function (key) {
+        return __awaiter(this, void 0, void 0, function () {
+            var api, team;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        api = new Api();
+                        return [4 /*yield*/, api.fetchAndReturnTeam(key)];
+                    case 1:
+                        team = _a.sent();
+                        UserInfo.favouriteTeam = team;
+                        localStorage.setItem('favourite-team', JSON.stringify(team));
+                        return [2 /*return*/];
+                }
+            });
         });
-    });
-}
+    };
+    UserInfo.favouriteTeam = JSON.parse(localStorage.getItem('favourite-team'))
+        ? JSON.parse(localStorage.getItem('favourite-team'))
+        : null;
+    return UserInfo;
+}());
 var Api = /** @class */ (function () {
     function Api() {
     }
@@ -131,15 +124,17 @@ var Api = /** @class */ (function () {
     };
     return Api;
 }());
-var Init = /** @class */ (function () {
-    function Init() {
+var Render = /** @class */ (function () {
+    function Render() {
     }
-    Init.prototype.initChooseTeamScreen = function () {
+    Render.prototype.renderChooseTeamScreen = function () {
         return __awaiter(this, void 0, void 0, function () {
             var api, teams;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        chooseTeamScreen.style.display = 'flex';
+                        teamScreen.style.display = 'none';
                         api = new Api();
                         return [4 /*yield*/, api.fetchAndReturnTeams()];
                     case 1:
@@ -155,29 +150,56 @@ var Init = /** @class */ (function () {
             });
         });
     };
+    Render.prototype.renderTeamScreen = function (previousGame, nextGame) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                previousGameLiEl.textContent = previousGame.teams.away.team.name + ": " + previousGame.teams.away.goals + " @ " + previousGame.teams.home.team.name + ": " + previousGame.teams.home.goals;
+                nextGameLiEl.textContent = nextGame.teams.away.team.name + " @ " + nextGame.teams.home.team.name;
+                chosenTeamH1El.textContent = UserInfo.favouriteTeam.name;
+                chooseTeamScreen.style.display = 'none';
+                teamScreen.style.display = 'flex';
+                return [2 /*return*/];
+            });
+        });
+    };
+    return Render;
+}());
+var Init = /** @class */ (function () {
+    function Init() {
+    }
+    Init.prototype.initChooseTeamScreen = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var render;
+            return __generator(this, function (_a) {
+                if (!UserInfo.favouriteTeam) {
+                    render = new Render();
+                    render.renderChooseTeamScreen();
+                }
+                else {
+                    this.initTeamScreen(UserInfo.favouriteTeam.id);
+                }
+                return [2 /*return*/];
+            });
+        });
+    };
     Init.prototype.initTeamScreen = function (id) {
         return __awaiter(this, void 0, void 0, function () {
-            var api, team, previousGame, nextGame;
+            var api, render, team, previousGame, nextGame;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         api = new Api();
+                        render = new Render();
                         return [4 /*yield*/, api.fetchAndReturnTeam(id)];
                     case 1:
                         team = _a.sent();
-                        console.log('team', team.nextGameSchedule.dates[0].games[0].gamePk);
                         return [4 /*yield*/, api.fetchAndReturnGame(team.previousGameSchedule.dates[0].games[0].gamePk)];
                     case 2:
                         previousGame = _a.sent();
                         return [4 /*yield*/, api.fetchAndReturnGame(team.nextGameSchedule.dates[0].games[0].gamePk)];
                     case 3:
                         nextGame = _a.sent();
-                        console.log('previousGame', previousGame);
-                        console.log('nextGame', nextGame);
-                        previousGameLiEl.textContent = previousGame.teams.away.team.name + ": " + previousGame.teams.away.goals + " @ " + previousGame.teams.home.team.name + ": " + previousGame.teams.home.goals;
-                        nextGameLiEl.textContent = nextGame.teams.away.team.name + " @ " + nextGame.teams.home.team.name;
-                        chooseTeamScreen.style.display = 'none';
-                        teamScreen.style.display = 'block';
+                        render.renderTeamScreen(previousGame, nextGame);
                         return [2 /*return*/];
                 }
             });
@@ -190,4 +212,10 @@ init.initChooseTeamScreen();
 selectTeamForm.addEventListener('submit', function (e) {
     e.preventDefault();
     init.initTeamScreen(parseInt(teamSelectEl.value));
+    var userInfo = new UserInfo();
+    userInfo.setFavouriteTeam(parseInt(teamSelectEl.value));
+});
+settingsButtonEl.addEventListener('click', function () {
+    var render = new Render();
+    render.renderChooseTeamScreen();
 });
