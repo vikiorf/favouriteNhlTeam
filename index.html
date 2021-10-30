@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
     <script src="app.js" defer></script>
     <link rel="stylesheet" href="./index.css">
     <title>Favourite Team</title>
@@ -17,14 +18,19 @@
       </form>
     </article>
     <article id="team-screen" style="display: none">
-      <div>
+      <div id="team-screen-header">
         <img src="./assets/settings.png" alt="Settings" id="settings-button"/>
         <h1 id="chosen-team">Chosen Team</h1>
       </div>
       <ul id="game-list">
-        <li class="game-item" id="previous-game">Previous game</li>
+        <li class="game-item" id="previous-game"></li>
         <li class="game-item" id="next-game">Next game</li>
       </ul>
+      <input type="button" value="Wins/Losses" id="wins-losses">
     </article>
+    <div id="graph-screen" style="display: none;">
+      <button id="graph-back">Back</button>
+      <canvas id="myChart" width="400" height="400" style="display: none;"></canvas>
+    </div>
   </body>
 </html>

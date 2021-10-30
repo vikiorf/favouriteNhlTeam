@@ -17,7 +17,19 @@ const nextGameLiEl = document.querySelector('#next-game')! as HTMLLIElement
 const settingsButtonEl = document.querySelector(
   '#settings-button'
 )! as HTMLImageElement
-const chosenTeamH1El = document.querySelector('#chosen-team')! as HTMLHeadingElement
+const chosenTeamH1El = document.querySelector(
+  '#chosen-team'
+)! as HTMLHeadingElement
+const winsLossesButtonEl = document.querySelector(
+  '#wins-losses'
+)! as HTMLInputElement
+const graphScreenEl = document.querySelector('#graph-screen')! as HTMLElement
+const graphBackButtonEl = document.querySelector(
+  '#graph-back'
+)! as HTMLButtonElement
+const graphEl = document.querySelector('#myChart')! as HTMLElement
+
+let myChart: any
 
 interface TeamItem {
   abbreviation: string
@@ -77,6 +89,7 @@ interface GameItem {
       shotsOnGoal: number
       team: {
         name: string
+        id: number
       }
     }
     home: {
@@ -87,6 +100,7 @@ interface GameItem {
       shotsOnGoal: number
       team: {
         name: string
+        id: number
       }
     }
   }
@@ -116,7 +130,6 @@ class Api {
       .then(res => {
         return res.teams
       })
-    console.log('teams', teams)
     return teams
   }
 
@@ -131,13 +144,43 @@ class Api {
     return team
   }
 
-  async fetchAndReturnGame(link: string): Promise<GameItem> {
+  async fetchAndReturnGame(id: string): Promise<GameItem> {
     let game = await fetch(
-      `https://statsapi.web.nhl.com/api/v1/game/${link}/linescore`
+      `https://statsapi.web.nhl.com/api/v1/game/${id}/linescore`
     )
       .then(res => res.json())
       .then(res => res)
     return game
+  }
+
+  async fetchAndReturnTeamWinsAndLosses(
+    teamId: number
+  ): Promise<{ wins: string; losses: string; overtime: string }> {
+    // fetch(
+    //   `https://statsapi.web.nhl.com/api/v1/schedule?teamId=14&season=20212022&expand=schedule.linsecore`
+    // )
+    const records = await fetch(
+      `https://statsapi.web.nhl.com/api/v1/standings?expand=standings.record`
+    )
+      .then(res => res.json())
+      .then(res => {
+        return res.records
+      })
+    let winsLosses = {
+      wins: '',
+      losses: '',
+      overtime: ''
+    }
+    records.forEach(record => {
+      record.teamRecords.forEach(teamRecord => {
+        if (teamRecord.team.id === teamId) {
+          winsLosses.wins = teamRecord.leagueRecord.wins
+          winsLosses.losses = teamRecord.leagueRecord.losses
+          winsLosses.overtime = teamRecord.leagueRecord.ot
+        }
+      })
+    })
+    return winsLosses
   }
 }
 
@@ -156,14 +199,104 @@ class Render {
     })
   }
 
-	async renderTeamScreen(previousGame: GameItem, nextGame: GameItem): Promise<void> {
-		previousGameLiEl.textContent = `${previousGame.teams.away.team.name}: ${previousGame.teams.away.goals} @ ${previousGame.teams.home.team.name}: ${previousGame.teams.home.goals}`
+  async renderTeamScreen(
+    previousGame: GameItem,
+    nextGame: GameItem
+  ): Promise<void> {
+    const api = new Api()
+    const previousGameAwayTeam = await api.fetchAndReturnTeam(
+      previousGame.teams.away.team.id
+    )
+    const previousGameHomeTeam = await api.fetchAndReturnTeam(
+      previousGame.teams.home.team.id
+    )
+
+    const previousGameAwayTeamPEl = document.createElement('p')
+    const previousGameHomeTeamPEl = document.createElement('p')
+
+    const previousGameAwayGoalsPEl = document.createElement('p')
+    const previousGameHomeGoalsPEl = document.createElement('p')
+
+    previousGameAwayTeamPEl.textContent = previousGameAwayTeam.abbreviation
+    previousGameHomeTeamPEl.textContent = previousGameHomeTeam.abbreviation
+
+    previousGameAwayGoalsPEl.textContent = previousGame.teams.away.goals.toString()
+    previousGameHomeGoalsPEl.textContent = previousGame.teams.home.goals.toString()
+
+    previousGameLiEl.append(previousGameAwayTeamPEl)
+    previousGameLiEl.append(previousGameHomeTeamPEl)
+    previousGameLiEl.append(previousGameAwayGoalsPEl)
+    previousGameLiEl.append(previousGameHomeGoalsPEl)
+
+    // previousGameLiEl.textContent = `${previousGameAwayTeam.abbreviation}: ${previousGame.teams.away.goals} @ ${previousGameHomeTeam.abbreviation}: ${previousGame.teams.home.goals}`
 
     nextGameLiEl.textContent = `${nextGame.teams.away.team.name} @ ${nextGame.teams.home.team.name}`
     chosenTeamH1El.textContent = UserInfo.favouriteTeam.name
     chooseTeamScreen.style.display = 'none'
+    graphScreenEl.style.display = 'none'
     teamScreen.style.display = 'flex'
-	}
+  }
+
+  async renderGraphScreen(): Promise<void> {
+    chooseTeamScreen.style.display = 'none'
+    teamScreen.style.display = 'none'
+    graphEl.style.display = 'block'
+    graphScreenEl.style.display = 'block'
+    if (myChart) myChart.destroy()
+
+    // console.log('UserInfo.favouriteTeam', UserInfo.favouriteTeam)
+    const api = new Api()
+    let winsLosses = await api.fetchAndReturnTeamWinsAndLosses(
+      UserInfo.favouriteTeam.id
+    )
+
+    let labels: string[]
+
+    if (winsLosses.overtime) {
+      labels = ['Wins', 'Losses', 'Overtime']
+    } else {
+      labels = ['Wins', 'Losses']
+    }
+
+    const data = [winsLosses.wins, winsLosses.losses, winsLosses.overtime]
+
+    myChart = new Chart(graphEl, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: '# of Games',
+            data: data,
+            backgroundColor: [
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 99, 132, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+          }
+        ]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    })
+  }
 }
 
 class Init {
@@ -177,7 +310,7 @@ class Init {
   }
   async initTeamScreen(id: number) {
     const api = new Api()
-		const render = new Render()
+    const render = new Render()
 
     const team: TeamItem = await api.fetchAndReturnTeam(id)
 
@@ -188,7 +321,7 @@ class Init {
       team.nextGameSchedule.dates[0].games[0].gamePk
     )
 
-		render.renderTeamScreen(previousGame, nextGame)
+    render.renderTeamScreen(previousGame, nextGame)
   }
 }
 
@@ -204,4 +337,12 @@ selectTeamForm.addEventListener('submit', e => {
 settingsButtonEl.addEventListener('click', () => {
   const render = new Render()
   render.renderChooseTeamScreen()
+})
+winsLossesButtonEl.addEventListener('click', () => {
+  const render = new Render()
+  render.renderGraphScreen()
+})
+graphBackButtonEl.addEventListener('click', () => {
+  const init = new Init()
+  init.initTeamScreen(UserInfo.favouriteTeam.id)
 })

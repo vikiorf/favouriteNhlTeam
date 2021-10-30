@@ -44,6 +44,11 @@ var previousGameLiEl = document.querySelector('#previous-game');
 var nextGameLiEl = document.querySelector('#next-game');
 var settingsButtonEl = document.querySelector('#settings-button');
 var chosenTeamH1El = document.querySelector('#chosen-team');
+var winsLossesButtonEl = document.querySelector('#wins-losses');
+var graphScreenEl = document.querySelector('#graph-screen');
+var graphBackButtonEl = document.querySelector('#graph-back');
+var graphEl = document.querySelector('#myChart');
+var myChart;
 var UserInfo = /** @class */ (function () {
     function UserInfo() {
     }
@@ -84,7 +89,6 @@ var Api = /** @class */ (function () {
                         })];
                     case 1:
                         teams = _a.sent();
-                        console.log('teams', teams);
                         return [2 /*return*/, teams];
                 }
             });
@@ -107,17 +111,48 @@ var Api = /** @class */ (function () {
             });
         });
     };
-    Api.prototype.fetchAndReturnGame = function (link) {
+    Api.prototype.fetchAndReturnGame = function (id) {
         return __awaiter(this, void 0, void 0, function () {
             var game;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, fetch("https://statsapi.web.nhl.com/api/v1/game/" + link + "/linescore")
+                    case 0: return [4 /*yield*/, fetch("https://statsapi.web.nhl.com/api/v1/game/" + id + "/linescore")
                             .then(function (res) { return res.json(); })
                             .then(function (res) { return res; })];
                     case 1:
                         game = _a.sent();
                         return [2 /*return*/, game];
+                }
+            });
+        });
+    };
+    Api.prototype.fetchAndReturnTeamWinsAndLosses = function (teamId) {
+        return __awaiter(this, void 0, void 0, function () {
+            var records, winsLosses;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, fetch("https://statsapi.web.nhl.com/api/v1/standings?expand=standings.record")
+                            .then(function (res) { return res.json(); })
+                            .then(function (res) {
+                            return res.records;
+                        })];
+                    case 1:
+                        records = _a.sent();
+                        winsLosses = {
+                            wins: '',
+                            losses: '',
+                            overtime: ''
+                        };
+                        records.forEach(function (record) {
+                            record.teamRecords.forEach(function (teamRecord) {
+                                if (teamRecord.team.id === teamId) {
+                                    winsLosses.wins = teamRecord.leagueRecord.wins;
+                                    winsLosses.losses = teamRecord.leagueRecord.losses;
+                                    winsLosses.overtime = teamRecord.leagueRecord.ot;
+                                }
+                            });
+                        });
+                        return [2 /*return*/, winsLosses];
                 }
             });
         });
@@ -152,13 +187,101 @@ var Render = /** @class */ (function () {
     };
     Render.prototype.renderTeamScreen = function (previousGame, nextGame) {
         return __awaiter(this, void 0, void 0, function () {
+            var api, previousGameAwayTeam, previousGameHomeTeam, previousGameAwayTeamPEl, previousGameHomeTeamPEl, previousGameAwayGoalsPEl, previousGameHomeGoalsPEl;
             return __generator(this, function (_a) {
-                previousGameLiEl.textContent = previousGame.teams.away.team.name + ": " + previousGame.teams.away.goals + " @ " + previousGame.teams.home.team.name + ": " + previousGame.teams.home.goals;
-                nextGameLiEl.textContent = nextGame.teams.away.team.name + " @ " + nextGame.teams.home.team.name;
-                chosenTeamH1El.textContent = UserInfo.favouriteTeam.name;
-                chooseTeamScreen.style.display = 'none';
-                teamScreen.style.display = 'flex';
-                return [2 /*return*/];
+                switch (_a.label) {
+                    case 0:
+                        api = new Api();
+                        return [4 /*yield*/, api.fetchAndReturnTeam(previousGame.teams.away.team.id)];
+                    case 1:
+                        previousGameAwayTeam = _a.sent();
+                        return [4 /*yield*/, api.fetchAndReturnTeam(previousGame.teams.home.team.id)];
+                    case 2:
+                        previousGameHomeTeam = _a.sent();
+                        previousGameAwayTeamPEl = document.createElement('p');
+                        previousGameHomeTeamPEl = document.createElement('p');
+                        previousGameAwayGoalsPEl = document.createElement('p');
+                        previousGameHomeGoalsPEl = document.createElement('p');
+                        previousGameAwayTeamPEl.textContent = previousGameAwayTeam.abbreviation;
+                        previousGameHomeTeamPEl.textContent = previousGameHomeTeam.abbreviation;
+                        previousGameAwayGoalsPEl.textContent = previousGame.teams.away.goals.toString();
+                        previousGameHomeGoalsPEl.textContent = previousGame.teams.home.goals.toString();
+                        previousGameLiEl.append(previousGameAwayTeamPEl);
+                        previousGameLiEl.append(previousGameHomeTeamPEl);
+                        previousGameLiEl.append(previousGameAwayGoalsPEl);
+                        previousGameLiEl.append(previousGameHomeGoalsPEl);
+                        // previousGameLiEl.textContent = `${previousGameAwayTeam.abbreviation}: ${previousGame.teams.away.goals} @ ${previousGameHomeTeam.abbreviation}: ${previousGame.teams.home.goals}`
+                        nextGameLiEl.textContent = nextGame.teams.away.team.name + " @ " + nextGame.teams.home.team.name;
+                        chosenTeamH1El.textContent = UserInfo.favouriteTeam.name;
+                        chooseTeamScreen.style.display = 'none';
+                        graphScreenEl.style.display = 'none';
+                        teamScreen.style.display = 'flex';
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Render.prototype.renderGraphScreen = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var api, winsLosses, labels, data;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        chooseTeamScreen.style.display = 'none';
+                        teamScreen.style.display = 'none';
+                        graphEl.style.display = 'block';
+                        graphScreenEl.style.display = 'block';
+                        if (myChart)
+                            myChart.destroy();
+                        api = new Api();
+                        return [4 /*yield*/, api.fetchAndReturnTeamWinsAndLosses(UserInfo.favouriteTeam.id)];
+                    case 1:
+                        winsLosses = _a.sent();
+                        if (winsLosses.overtime) {
+                            labels = ['Wins', 'Losses', 'Overtime'];
+                        }
+                        else {
+                            labels = ['Wins', 'Losses'];
+                        }
+                        data = [winsLosses.wins, winsLosses.losses, winsLosses.overtime];
+                        myChart = new Chart(graphEl, {
+                            type: 'bar',
+                            data: {
+                                labels: labels,
+                                datasets: [
+                                    {
+                                        label: '# of Games',
+                                        data: data,
+                                        backgroundColor: [
+                                            'rgba(54, 162, 235, 0.2)',
+                                            'rgba(255, 99, 132, 0.2)',
+                                            'rgba(255, 206, 86, 0.2)',
+                                            'rgba(75, 192, 192, 0.2)',
+                                            'rgba(153, 102, 255, 0.2)',
+                                            'rgba(255, 159, 64, 0.2)'
+                                        ],
+                                        borderColor: [
+                                            'rgba(54, 162, 235, 1)',
+                                            'rgba(255, 99, 132, 1)',
+                                            'rgba(255, 206, 86, 1)',
+                                            'rgba(75, 192, 192, 1)',
+                                            'rgba(153, 102, 255, 1)',
+                                            'rgba(255, 159, 64, 1)'
+                                        ],
+                                        borderWidth: 1
+                                    }
+                                ]
+                            },
+                            options: {
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    }
+                                }
+                            }
+                        });
+                        return [2 /*return*/];
+                }
             });
         });
     };
@@ -218,4 +341,12 @@ selectTeamForm.addEventListener('submit', function (e) {
 settingsButtonEl.addEventListener('click', function () {
     var render = new Render();
     render.renderChooseTeamScreen();
+});
+winsLossesButtonEl.addEventListener('click', function () {
+    var render = new Render();
+    render.renderGraphScreen();
+});
+graphBackButtonEl.addEventListener('click', function () {
+    var init = new Init();
+    init.initTeamScreen(UserInfo.favouriteTeam.id);
 });
