@@ -139,13 +139,14 @@ var Api = /** @class */ (function () {
                     case 1:
                         records = _a.sent();
                         winsLosses = {
-                            wins: '',
-                            losses: '',
-                            overtime: ''
+                            wins: 0,
+                            losses: 0,
+                            overtime: 0
                         };
                         records.forEach(function (record) {
                             record.teamRecords.forEach(function (teamRecord) {
                                 if (teamRecord.team.id === teamId) {
+                                    console.log(teamRecord);
                                     winsLosses.wins = teamRecord.leagueRecord.wins;
                                     winsLosses.losses = teamRecord.leagueRecord.losses;
                                     winsLosses.overtime = teamRecord.leagueRecord.ot;
@@ -162,6 +163,71 @@ var Api = /** @class */ (function () {
 var Render = /** @class */ (function () {
     function Render() {
     }
+    Render.prototype.changePreviousGameLiEl = function (previousGame) {
+        return __awaiter(this, void 0, void 0, function () {
+            var api, previousGameAwayTeam, previousGameHomeTeam, previousGameAwayTeamPEl, previousGameHomeTeamPEl, atCharacterPEl, previousGameAwayGoalsPEl, previousGameHomeGoalsPEl;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        api = new Api();
+                        return [4 /*yield*/, api.fetchAndReturnTeam(previousGame.teams.away.team.id)];
+                    case 1:
+                        previousGameAwayTeam = _a.sent();
+                        return [4 /*yield*/, api.fetchAndReturnTeam(previousGame.teams.home.team.id)];
+                    case 2:
+                        previousGameHomeTeam = _a.sent();
+                        previousGameAwayTeamPEl = document.createElement('p');
+                        previousGameHomeTeamPEl = document.createElement('p');
+                        atCharacterPEl = document.createElement('p');
+                        previousGameAwayGoalsPEl = document.createElement('p');
+                        previousGameHomeGoalsPEl = document.createElement('p');
+                        previousGameHomeGoalsPEl.classList.add('third-column');
+                        previousGameAwayTeamPEl.textContent = previousGameAwayTeam.abbreviation;
+                        previousGameHomeTeamPEl.textContent = previousGameHomeTeam.abbreviation;
+                        previousGameAwayGoalsPEl.textContent =
+                            previousGame.teams.away.goals.toString();
+                        previousGameHomeGoalsPEl.textContent =
+                            previousGame.teams.home.goals.toString();
+                        atCharacterPEl.textContent = '@';
+                        previousGameLiEl.innerHTML = '';
+                        previousGameLiEl.append(previousGameAwayTeamPEl);
+                        previousGameLiEl.append(atCharacterPEl);
+                        previousGameLiEl.append(previousGameHomeTeamPEl);
+                        previousGameLiEl.append(previousGameAwayGoalsPEl);
+                        previousGameLiEl.append(previousGameHomeGoalsPEl);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    Render.prototype.changeNextGameLiEl = function (nextGame) {
+        return __awaiter(this, void 0, void 0, function () {
+            var api, nextGameAwayTeam, nextGameHomeTeam, nextGameAwayTeamPEl, nextGameHomeTeamPEl, atCharacterPEl;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        api = new Api();
+                        return [4 /*yield*/, api.fetchAndReturnTeam(nextGame.teams.away.team.id)];
+                    case 1:
+                        nextGameAwayTeam = _a.sent();
+                        return [4 /*yield*/, api.fetchAndReturnTeam(nextGame.teams.home.team.id)];
+                    case 2:
+                        nextGameHomeTeam = _a.sent();
+                        nextGameAwayTeamPEl = document.createElement('p');
+                        nextGameHomeTeamPEl = document.createElement('p');
+                        atCharacterPEl = document.createElement('p');
+                        nextGameAwayTeamPEl.textContent = nextGameAwayTeam.abbreviation;
+                        nextGameHomeTeamPEl.textContent = nextGameHomeTeam.abbreviation;
+                        atCharacterPEl.textContent = '@';
+                        nextGameLiEl.innerHTML = '';
+                        nextGameLiEl.append(nextGameAwayTeamPEl);
+                        nextGameLiEl.append(atCharacterPEl);
+                        nextGameLiEl.append(nextGameHomeTeamPEl);
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
     Render.prototype.renderChooseTeamScreen = function () {
         return __awaiter(this, void 0, void 0, function () {
             var api, teams;
@@ -187,37 +253,15 @@ var Render = /** @class */ (function () {
     };
     Render.prototype.renderTeamScreen = function (previousGame, nextGame) {
         return __awaiter(this, void 0, void 0, function () {
-            var api, previousGameAwayTeam, previousGameHomeTeam, previousGameAwayTeamPEl, previousGameHomeTeamPEl, previousGameAwayGoalsPEl, previousGameHomeGoalsPEl;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        api = new Api();
-                        return [4 /*yield*/, api.fetchAndReturnTeam(previousGame.teams.away.team.id)];
-                    case 1:
-                        previousGameAwayTeam = _a.sent();
-                        return [4 /*yield*/, api.fetchAndReturnTeam(previousGame.teams.home.team.id)];
-                    case 2:
-                        previousGameHomeTeam = _a.sent();
-                        previousGameAwayTeamPEl = document.createElement('p');
-                        previousGameHomeTeamPEl = document.createElement('p');
-                        previousGameAwayGoalsPEl = document.createElement('p');
-                        previousGameHomeGoalsPEl = document.createElement('p');
-                        previousGameAwayTeamPEl.textContent = previousGameAwayTeam.abbreviation;
-                        previousGameHomeTeamPEl.textContent = previousGameHomeTeam.abbreviation;
-                        previousGameAwayGoalsPEl.textContent = previousGame.teams.away.goals.toString();
-                        previousGameHomeGoalsPEl.textContent = previousGame.teams.home.goals.toString();
-                        previousGameLiEl.append(previousGameAwayTeamPEl);
-                        previousGameLiEl.append(previousGameHomeTeamPEl);
-                        previousGameLiEl.append(previousGameAwayGoalsPEl);
-                        previousGameLiEl.append(previousGameHomeGoalsPEl);
-                        // previousGameLiEl.textContent = `${previousGameAwayTeam.abbreviation}: ${previousGame.teams.away.goals} @ ${previousGameHomeTeam.abbreviation}: ${previousGame.teams.home.goals}`
-                        nextGameLiEl.textContent = nextGame.teams.away.team.name + " @ " + nextGame.teams.home.team.name;
-                        chosenTeamH1El.textContent = UserInfo.favouriteTeam.name;
-                        chooseTeamScreen.style.display = 'none';
-                        graphScreenEl.style.display = 'none';
-                        teamScreen.style.display = 'flex';
-                        return [2 /*return*/];
-                }
+                this.changePreviousGameLiEl(previousGame);
+                this.changeNextGameLiEl(nextGame);
+                // nextGameLiEl.textContent = `${nextGame.teams.away.team.name} @ ${nextGame.teams.home.team.name}`
+                chosenTeamH1El.textContent = UserInfo.favouriteTeam.name;
+                chooseTeamScreen.style.display = 'none';
+                graphScreenEl.style.display = 'none';
+                teamScreen.style.display = 'flex';
+                return [2 /*return*/];
             });
         });
     };
