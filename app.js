@@ -49,6 +49,7 @@ var chooseTeamScreen = document.querySelector('#choose-team-screen');
 var teamScreen = document.querySelector('#team-screen');
 var selectTeamForm = document.querySelector('#select-team-form');
 var teamSelectEl = document.querySelector('#team-select');
+var gameListEl = document.querySelector('#game-list');
 var previousGameLiEl = document.querySelector('#previous-game');
 var nextGameLiEl = document.querySelector('#next-game');
 var settingsButtonEl = document.querySelector('#settings-button');
@@ -58,7 +59,9 @@ var graphScreenEl = document.querySelector('#graph-screen');
 var graphBackButtonEl = document.querySelector('#graph-back');
 var graphEl = document.querySelector('#myChart');
 var videoModalEl = document.querySelector('#video-modal');
+var lastNightScreenEl = document.querySelector('#last-night-screen');
 var lastNightGamesButtonEl = document.querySelector('#last-night-games');
+var lastNightBackButtonEl = document.querySelector('#last-night-back-button');
 var lastNightGameList = document.querySelector('#last-night-game-list');
 var myChart;
 var UserInfo = /** @class */ (function () {
@@ -187,7 +190,6 @@ var Api = /** @class */ (function () {
                         records.forEach(function (record) {
                             record.teamRecords.forEach(function (teamRecord) {
                                 if (teamRecord.team.id === teamId) {
-                                    console.log(teamRecord);
                                     winsLosses.wins = teamRecord.leagueRecord.wins;
                                     winsLosses.losses = teamRecord.leagueRecord.losses;
                                     winsLosses.overtime = teamRecord.leagueRecord.ot;
@@ -199,12 +201,135 @@ var Api = /** @class */ (function () {
             });
         });
     };
+    Api.prototype.fetchAndReturnGamesFromDate = function (date) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, fetch("https://statsapi.web.nhl.com/api/v1/schedule?date=" + date)
+                            .then(function (res) { return res.json(); })
+                            .then(function (res) { return res.dates[0].games; })];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
     return Api;
+}());
+var Time = /** @class */ (function () {
+    function Time() {
+    }
+    Time.prototype.calculateAndReturnLastYesterdayDate = function (date) {
+        var formattedDate = date.toISOString().split('T')[0];
+        var splitDate = formattedDate.split('-');
+        var day = parseInt(splitDate[2]);
+        var month = parseInt(splitDate[1]);
+        var year = parseInt(splitDate[0]);
+        if (day === 1) {
+            month = month - 1;
+            switch (month) {
+                case 0:
+                    month = 12;
+                    day = 31;
+                    year = year - 1;
+                    break;
+                case 1:
+                    day = 31;
+                    break;
+                case 2:
+                    day = 28;
+                    break;
+                case 3:
+                    day = 31;
+                    break;
+                case 4:
+                    day = 30;
+                    break;
+                case 5:
+                    day = 31;
+                    break;
+                case 6:
+                    day = 30;
+                    break;
+                case 7:
+                    day = 31;
+                    break;
+                case 8:
+                    day = 31;
+                    break;
+                case 9:
+                    day = 30;
+                    break;
+                case 10:
+                    day = 31;
+                    break;
+                case 11:
+                    day = 30;
+                    break;
+                case 12:
+                    day = 31;
+                    break;
+            }
+        }
+        else {
+            day = day - 1;
+        }
+        return year + "-" + month + "-" + day;
+    };
+    return Time;
 }());
 var Render = /** @class */ (function () {
     function Render() {
     }
-    Render.prototype.changeVideoModalEl = function (video) {
+    Render.prototype.createGameItemWithScore = function (gameItem, screen) {
+        return __awaiter(this, void 0, void 0, function () {
+            var api, gameLiEl, awayTeamPEl, homeTeamPEl, atCharacterPEl, awayTeamScorePEl, homeTeamScorePEl, awayTeam, homeTeam, userInfo, watchedGame;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        api = new Api();
+                        gameLiEl = document.createElement('li');
+                        awayTeamPEl = document.createElement('p');
+                        homeTeamPEl = document.createElement('p');
+                        atCharacterPEl = document.createElement('p');
+                        awayTeamScorePEl = document.createElement('p');
+                        homeTeamScorePEl = document.createElement('p');
+                        gameLiEl.classList.add('game-item');
+                        homeTeamScorePEl.classList.add('third-column');
+                        return [4 /*yield*/, api.fetchAndReturnTeam(gameItem.teams.away.team.id)];
+                    case 1:
+                        awayTeam = _a.sent();
+                        return [4 /*yield*/, api.fetchAndReturnTeam(gameItem.teams.home.team.id)];
+                    case 2:
+                        homeTeam = _a.sent();
+                        awayTeamPEl.textContent = awayTeam.abbreviation;
+                        homeTeamPEl.textContent = homeTeam.abbreviation;
+                        atCharacterPEl.textContent = '@';
+                        userInfo = new UserInfo();
+                        watchedGame = userInfo.checkIfGameIsWatched(gameItem.id);
+                        if (!watchedGame) {
+                            awayTeamScorePEl.textContent = '*';
+                            homeTeamScorePEl.textContent = '*';
+                        }
+                        else {
+                            awayTeamScorePEl.textContent = gameItem.teams.away.goals.toString();
+                            homeTeamScorePEl.textContent = gameItem.teams.home.goals.toString();
+                        }
+                        gameLiEl.addEventListener('click', function () {
+                            _this.changeVideoModalEl(gameItem.video, screen);
+                            userInfo.markGameAsWatched(gameItem.id);
+                        });
+                        gameLiEl.append(awayTeamPEl);
+                        gameLiEl.append(atCharacterPEl);
+                        gameLiEl.append(homeTeamPEl);
+                        gameLiEl.append(awayTeamScorePEl);
+                        gameLiEl.append(homeTeamScorePEl);
+                        return [2 /*return*/, gameLiEl];
+                }
+            });
+        });
+    };
+    Render.prototype.changeVideoModalEl = function (video, backString) {
         var videoEl = document.createElement('video');
         var sourceEl = document.createElement('source');
         var backButtonEl = document.createElement('button');
@@ -212,7 +337,13 @@ var Render = /** @class */ (function () {
         backButtonEl.addEventListener('click', function () {
             var init = new Init();
             videoModalEl.style.display = 'none';
-            init.initTeamScreen(UserInfo.favouriteTeam.id);
+            if (backString === 'teamscreen') {
+                init.initTeamScreen(UserInfo.favouriteTeam.id);
+            }
+            else if ('last-night') {
+                var render = new Render();
+                render.renderLastNightGames();
+            }
             videoModalEl.innerHTML = '';
         });
         backButtonEl.textContent = 'Back';
@@ -226,63 +357,15 @@ var Render = /** @class */ (function () {
         videoModalEl.append(videoEl);
         videoModalEl.style.display = 'grid';
     };
-    Render.prototype.changePreviousGameLiEl = function (previousGame) {
+    Render.prototype.createGameItemWithoutScore = function (nextGame) {
         return __awaiter(this, void 0, void 0, function () {
-            var api, previousGameAwayTeam, previousGameHomeTeam, previousGameAwayTeamPEl, previousGameHomeTeamPEl, atCharacterPEl, previousGameAwayGoalsPEl, previousGameHomeGoalsPEl, userInfo, watchedGame;
-            var _this = this;
+            var api, newNextGameLiEl, nextGameAwayTeam, nextGameHomeTeam, nextGameAwayTeamPEl, nextGameHomeTeamPEl, atCharacterPEl;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         api = new Api();
-                        return [4 /*yield*/, api.fetchAndReturnTeam(previousGame.teams.away.team.id)];
-                    case 1:
-                        previousGameAwayTeam = _a.sent();
-                        return [4 /*yield*/, api.fetchAndReturnTeam(previousGame.teams.home.team.id)];
-                    case 2:
-                        previousGameHomeTeam = _a.sent();
-                        previousGameAwayTeamPEl = document.createElement('p');
-                        previousGameHomeTeamPEl = document.createElement('p');
-                        atCharacterPEl = document.createElement('p');
-                        previousGameAwayGoalsPEl = document.createElement('p');
-                        previousGameHomeGoalsPEl = document.createElement('p');
-                        previousGameHomeGoalsPEl.classList.add('third-column');
-                        previousGameAwayTeamPEl.textContent = previousGameAwayTeam.abbreviation;
-                        previousGameHomeTeamPEl.textContent = previousGameHomeTeam.abbreviation;
-                        userInfo = new UserInfo();
-                        watchedGame = userInfo.checkIfGameIsWatched(previousGame.id);
-                        if (!watchedGame) {
-                            previousGameAwayGoalsPEl.textContent = '*';
-                            previousGameHomeGoalsPEl.textContent = '*';
-                        }
-                        else {
-                            previousGameAwayGoalsPEl.textContent =
-                                previousGame.teams.away.goals.toString();
-                            previousGameHomeGoalsPEl.textContent =
-                                previousGame.teams.home.goals.toString();
-                        }
-                        atCharacterPEl.textContent = '@';
-                        previousGameLiEl.innerHTML = '';
-                        previousGameLiEl.append(previousGameAwayTeamPEl);
-                        previousGameLiEl.append(atCharacterPEl);
-                        previousGameLiEl.append(previousGameHomeTeamPEl);
-                        previousGameLiEl.append(previousGameAwayGoalsPEl);
-                        previousGameLiEl.append(previousGameHomeGoalsPEl);
-                        previousGameLiEl.addEventListener('click', function () {
-                            _this.changeVideoModalEl(previousGame.video);
-                            userInfo.markGameAsWatched(previousGame.id);
-                        });
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    Render.prototype.changeNextGameLiEl = function (nextGame) {
-        return __awaiter(this, void 0, void 0, function () {
-            var api, nextGameAwayTeam, nextGameHomeTeam, nextGameAwayTeamPEl, nextGameHomeTeamPEl, atCharacterPEl;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        api = new Api();
+                        newNextGameLiEl = document.createElement('li');
+                        newNextGameLiEl.classList.add('game-item');
                         return [4 /*yield*/, api.fetchAndReturnTeam(nextGame.teams.away.team.id)];
                     case 1:
                         nextGameAwayTeam = _a.sent();
@@ -295,11 +378,10 @@ var Render = /** @class */ (function () {
                         nextGameAwayTeamPEl.textContent = nextGameAwayTeam.abbreviation;
                         nextGameHomeTeamPEl.textContent = nextGameHomeTeam.abbreviation;
                         atCharacterPEl.textContent = '@';
-                        nextGameLiEl.innerHTML = '';
-                        nextGameLiEl.append(nextGameAwayTeamPEl);
-                        nextGameLiEl.append(atCharacterPEl);
-                        nextGameLiEl.append(nextGameHomeTeamPEl);
-                        return [2 /*return*/];
+                        newNextGameLiEl.append(nextGameAwayTeamPEl);
+                        newNextGameLiEl.append(atCharacterPEl);
+                        newNextGameLiEl.append(nextGameHomeTeamPEl);
+                        return [2 /*return*/, newNextGameLiEl];
                 }
             });
         });
@@ -329,14 +411,26 @@ var Render = /** @class */ (function () {
     };
     Render.prototype.renderTeamScreen = function (previousGame, nextGame) {
         return __awaiter(this, void 0, void 0, function () {
+            var previousGameEl, nextGameEl;
             return __generator(this, function (_a) {
-                this.changePreviousGameLiEl(previousGame);
-                this.changeNextGameLiEl(nextGame);
-                chosenTeamH1El.textContent = UserInfo.favouriteTeam.name;
-                chooseTeamScreen.style.display = 'none';
-                graphScreenEl.style.display = 'none';
-                teamScreen.style.display = 'flex';
-                return [2 /*return*/];
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.createGameItemWithScore(previousGame, 'teamscreen')];
+                    case 1:
+                        previousGameEl = _a.sent();
+                        return [4 /*yield*/, this.createGameItemWithoutScore(nextGame)];
+                    case 2:
+                        nextGameEl = _a.sent();
+                        gameListEl.innerHTML = '';
+                        gameListEl.append(previousGameEl);
+                        gameListEl.append(nextGameEl);
+                        // this.changeNextGameLiEl(nextGame)
+                        chosenTeamH1El.textContent = UserInfo.favouriteTeam.name;
+                        lastNightScreenEl.style.display = 'none';
+                        chooseTeamScreen.style.display = 'none';
+                        graphScreenEl.style.display = 'none';
+                        teamScreen.style.display = 'flex';
+                        return [2 /*return*/];
+                }
             });
         });
     };
@@ -406,122 +500,33 @@ var Render = /** @class */ (function () {
     };
     Render.prototype.renderLastNightGames = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var date, formattedDate, splitDate, day, month, year, yesterdayDate, fetchedGames, updatedGames;
+            var date, time, api, yesterdayDate, fetchedGames;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
+                        lastNightScreenEl.style.display = 'flex';
+                        teamScreen.style.display = 'none';
                         date = new Date();
-                        formattedDate = date.toISOString().split('T')[0];
-                        splitDate = formattedDate.split('-');
-                        day = parseInt(splitDate[2]);
-                        month = parseInt(splitDate[1]);
-                        year = parseInt(splitDate[0]);
-                        if (day === 1) {
-                            month = month - 1;
-                            switch (month) {
-                                case 0:
-                                    month = 12;
-                                    day = 31;
-                                    year = year - 1;
-                                    break;
-                                case 1:
-                                    day = 31;
-                                    break;
-                                case 2:
-                                    day = 28;
-                                    break;
-                                case 3:
-                                    day = 31;
-                                    break;
-                                case 4:
-                                    day = 30;
-                                    break;
-                                case 5:
-                                    day = 31;
-                                    break;
-                                case 6:
-                                    day = 30;
-                                    break;
-                                case 7:
-                                    day = 31;
-                                    break;
-                                case 8:
-                                    day = 31;
-                                    break;
-                                case 9:
-                                    day = 30;
-                                    break;
-                                case 10:
-                                    day = 31;
-                                    break;
-                                case 11:
-                                    day = 30;
-                                    break;
-                                case 12:
-                                    day = 31;
-                                    break;
-                            }
-                        }
-                        else {
-                            day = day - 1;
-                        }
-                        yesterdayDate = year + "-" + month + "-" + day;
-                        return [4 /*yield*/, fetch("https://statsapi.web.nhl.com/api/v1/schedule?date=" + yesterdayDate)
-                                .then(function (res) { return res.json(); })
-                                .then(function (res) { return res.dates[0].games; })];
+                        time = new Time();
+                        api = new Api();
+                        return [4 /*yield*/, time.calculateAndReturnLastYesterdayDate(date)];
                     case 1:
+                        yesterdayDate = _a.sent();
+                        return [4 /*yield*/, api.fetchAndReturnGamesFromDate(yesterdayDate)];
+                    case 2:
                         fetchedGames = _a.sent();
-                        updatedGames = [];
                         lastNightGameList.innerHTML = '';
                         fetchedGames.forEach(function (game) { return __awaiter(_this, void 0, void 0, function () {
-                            var api, gameItem, gameLiEl, awayTeamPEl, homeTeamPEl, atCharacterPEl, awayTeamScorePEl, homeTeamScorePEl, awayTeam, homeTeam, userInfo, watchedGame;
-                            var _this = this;
+                            var gameItem, gameLiEl;
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
-                                    case 0:
-                                        api = new Api();
-                                        return [4 /*yield*/, api.fetchAndReturnGame(game.gamePk)];
+                                    case 0: return [4 /*yield*/, api.fetchAndReturnGame(game.gamePk)];
                                     case 1:
                                         gameItem = _a.sent();
-                                        updatedGames.push(gameItem);
-                                        gameLiEl = document.createElement('li');
-                                        awayTeamPEl = document.createElement('p');
-                                        homeTeamPEl = document.createElement('p');
-                                        atCharacterPEl = document.createElement('p');
-                                        awayTeamScorePEl = document.createElement('p');
-                                        homeTeamScorePEl = document.createElement('p');
-                                        gameLiEl.classList.add('game-item');
-                                        homeTeamScorePEl.classList.add('third-column');
-                                        return [4 /*yield*/, api.fetchAndReturnTeam(gameItem.teams.away.team.id)];
+                                        return [4 /*yield*/, this.createGameItemWithScore(gameItem, 'last-night')];
                                     case 2:
-                                        awayTeam = _a.sent();
-                                        return [4 /*yield*/, api.fetchAndReturnTeam(gameItem.teams.home.team.id)];
-                                    case 3:
-                                        homeTeam = _a.sent();
-                                        awayTeamPEl.textContent = awayTeam.abbreviation;
-                                        homeTeamPEl.textContent = homeTeam.abbreviation;
-                                        atCharacterPEl.textContent = '@';
-                                        userInfo = new UserInfo();
-                                        watchedGame = userInfo.checkIfGameIsWatched(gameItem.id);
-                                        if (!watchedGame) {
-                                            awayTeamScorePEl.textContent = '*';
-                                            homeTeamScorePEl.textContent = '*';
-                                        }
-                                        else {
-                                            awayTeamScorePEl.textContent = gameItem.teams.away.goals.toString();
-                                            homeTeamScorePEl.textContent = gameItem.teams.home.goals.toString();
-                                        }
-                                        gameLiEl.addEventListener('click', function () {
-                                            console.log(gameItem.id);
-                                            _this.changeVideoModalEl(gameItem.video);
-                                            userInfo.markGameAsWatched(gameItem.id);
-                                        });
-                                        gameLiEl.append(awayTeamPEl);
-                                        gameLiEl.append(atCharacterPEl);
-                                        gameLiEl.append(homeTeamPEl);
-                                        gameLiEl.append(awayTeamScorePEl);
-                                        gameLiEl.append(homeTeamScorePEl);
+                                        gameLiEl = _a.sent();
                                         lastNightGameList.append(gameLiEl);
                                         return [2 /*return*/];
                                 }
@@ -597,7 +602,9 @@ lastNightGamesButtonEl.addEventListener('click', function () {
     var render = new Render();
     render.renderLastNightGames();
 });
+lastNightBackButtonEl.addEventListener('click', function () {
+    init.initTeamScreen(UserInfo.favouriteTeam.id);
+});
 graphBackButtonEl.addEventListener('click', function () {
-    var init = new Init();
     init.initTeamScreen(UserInfo.favouriteTeam.id);
 });

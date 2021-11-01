@@ -61,11 +61,9 @@
 
 #video-modal {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  left: 10px;
-  bottom: 10px;
-  background-color: white;
+  inset: 0;
+  padding: 10px;
+  background-color: gray;
   display: grid;
 }
 
@@ -80,4 +78,26 @@
   grid-column: 1;
   justify-self: center;
   border: 1px solid black;
+}
+
+#last-night-screen {
+  display: flex;
+  flex-direction: column;
+}
+
+#last-night-screen div {
+  display: grid;
+}
+#last-night-screen div button {
+  grid-row: 1;
+  grid-column: 1;
+  width: 40px;
+  height: 40px;
+  align-self: center;
+}
+#last-night-screen div h1 {
+  grid-row: 1;
+  grid-column: 1;
+  align-self: center;
+  justify-self: center;
 }
