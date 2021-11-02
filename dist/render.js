@@ -35,248 +35,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
-// https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md
-var chooseTeamScreen = document.querySelector('#choose-team-screen');
-var teamScreen = document.querySelector('#team-screen');
-var selectTeamForm = document.querySelector('#select-team-form');
-var teamSelectEl = document.querySelector('#team-select');
-var gameListEl = document.querySelector('#game-list');
-var previousGameLiEl = document.querySelector('#previous-game');
-var nextGameLiEl = document.querySelector('#next-game');
-var settingsButtonEl = document.querySelector('#settings-button');
-var chosenTeamH1El = document.querySelector('#chosen-team');
-var winsLossesButtonEl = document.querySelector('#wins-losses');
-var graphScreenEl = document.querySelector('#graph-screen');
-var graphBackButtonEl = document.querySelector('#graph-back');
-var graphEl = document.querySelector('#myChart');
-var videoModalEl = document.querySelector('#video-modal');
-var lastNightScreenEl = document.querySelector('#last-night-screen');
-var lastNightGamesButtonEl = document.querySelector('#last-night-games');
-var lastNightBackButtonEl = document.querySelector('#last-night-back-button');
-var lastNightGameList = document.querySelector('#last-night-game-list');
-var myChart;
-var UserInfo = /** @class */ (function () {
-    function UserInfo() {
-    }
-    UserInfo.prototype.setFavouriteTeam = function (key) {
-        return __awaiter(this, void 0, void 0, function () {
-            var api, team;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        api = new Api();
-                        return [4 /*yield*/, api.fetchAndReturnTeam(key)];
-                    case 1:
-                        team = _a.sent();
-                        UserInfo.favouriteTeam = team;
-                        localStorage.setItem('favourite-team', JSON.stringify(team));
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    UserInfo.prototype.markGameAsWatched = function (id) {
-        var games = __spreadArray([], UserInfo.watchedGames, true);
-        var foundGameId = games.findIndex(function (gameId) { return gameId === id; });
-        if (foundGameId === -1) {
-            games.push(id);
-            UserInfo.watchedGames = games;
-            localStorage.setItem('watched-games', JSON.stringify(games));
-        }
-    };
-    UserInfo.prototype.checkIfGameIsWatched = function (gameId) {
-        var watched = UserInfo.watchedGames.findIndex(function (_gameId) { return _gameId === gameId; });
-        if (watched === -1) {
-            return false;
-        }
-        else {
-            return true;
-        }
-    };
-    UserInfo.favouriteTeam = JSON.parse(localStorage.getItem('favourite-team'))
-        ? JSON.parse(localStorage.getItem('favourite-team'))
-        : null;
-    UserInfo.watchedGames = JSON.parse(localStorage.getItem('watched-games'))
-        ? JSON.parse(localStorage.getItem('watched-games'))
-        : [];
-    return UserInfo;
-}());
-var Api = /** @class */ (function () {
-    function Api() {
-    }
-    Api.prototype.fetchAndReturnTeams = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var teams;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, fetch('https://statsapi.web.nhl.com/api/v1/teams')
-                            .then(function (res) { return res.json(); })
-                            .then(function (res) {
-                            return res.teams;
-                        })];
-                    case 1:
-                        teams = _a.sent();
-                        return [2 /*return*/, teams];
-                }
-            });
-        });
-    };
-    Api.prototype.fetchAndReturnTeam = function (id) {
-        return __awaiter(this, void 0, void 0, function () {
-            var team;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, fetch("https://statsapi.web.nhl.com/api/v1/teams/" + id + "?expand=team.schedule.next&expand=team.schedule.previous")
-                            .then(function (res) { return res.json(); })
-                            .then(function (res) {
-                            return res.teams[0];
-                        })];
-                    case 1:
-                        team = _a.sent();
-                        return [2 /*return*/, team];
-                }
-            });
-        });
-    };
-    Api.prototype.fetchAndReturnGame = function (id) {
-        var _a;
-        return __awaiter(this, void 0, void 0, function () {
-            var game, hej;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0: return [4 /*yield*/, fetch("https://statsapi.web.nhl.com/api/v1/game/" + id + "/linescore")
-                            .then(function (res) { return res.json(); })
-                            .then(function (res) { return res; })];
-                    case 1:
-                        game = _b.sent();
-                        return [4 /*yield*/, fetch("https://statsapi.web.nhl.com/api/v1/game/" + id + "/content")
-                                .then(function (res) { return res.json(); })
-                                .then(function (res) { return res; })];
-                    case 2:
-                        hej = _b.sent();
-                        game.video = (_a = hej.media.epg[3].items[0]) === null || _a === void 0 ? void 0 : _a.playbacks[3].url;
-                        game.id = id;
-                        return [2 /*return*/, game];
-                }
-            });
-        });
-    };
-    Api.prototype.fetchAndReturnTeamWinsAndLosses = function (teamId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var records, winsLosses;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, fetch("https://statsapi.web.nhl.com/api/v1/standings?expand=standings.record")
-                            .then(function (res) { return res.json(); })
-                            .then(function (res) {
-                            return res.records;
-                        })];
-                    case 1:
-                        records = _a.sent();
-                        winsLosses = {
-                            wins: 0,
-                            losses: 0,
-                            overtime: 0
-                        };
-                        records.forEach(function (record) {
-                            record.teamRecords.forEach(function (teamRecord) {
-                                if (teamRecord.team.id === teamId) {
-                                    winsLosses.wins = teamRecord.leagueRecord.wins;
-                                    winsLosses.losses = teamRecord.leagueRecord.losses;
-                                    winsLosses.overtime = teamRecord.leagueRecord.ot;
-                                }
-                            });
-                        });
-                        return [2 /*return*/, winsLosses];
-                }
-            });
-        });
-    };
-    Api.prototype.fetchAndReturnGamesFromDate = function (date) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, fetch("https://statsapi.web.nhl.com/api/v1/schedule?date=" + date)
-                            .then(function (res) { return res.json(); })
-                            .then(function (res) { return res.dates[0].games; })];
-                    case 1: return [2 /*return*/, _a.sent()];
-                }
-            });
-        });
-    };
-    return Api;
-}());
-var Time = /** @class */ (function () {
-    function Time() {
-    }
-    Time.prototype.calculateAndReturnLastYesterdayDate = function (date) {
-        var formattedDate = date.toISOString().split('T')[0];
-        var splitDate = formattedDate.split('-');
-        var day = parseInt(splitDate[2]);
-        var month = parseInt(splitDate[1]);
-        var year = parseInt(splitDate[0]);
-        if (day === 1) {
-            month = month - 1;
-            switch (month) {
-                case 0:
-                    month = 12;
-                    day = 31;
-                    year = year - 1;
-                    break;
-                case 1:
-                    day = 31;
-                    break;
-                case 2:
-                    day = 28;
-                    break;
-                case 3:
-                    day = 31;
-                    break;
-                case 4:
-                    day = 30;
-                    break;
-                case 5:
-                    day = 31;
-                    break;
-                case 6:
-                    day = 30;
-                    break;
-                case 7:
-                    day = 31;
-                    break;
-                case 8:
-                    day = 31;
-                    break;
-                case 9:
-                    day = 30;
-                    break;
-                case 10:
-                    day = 31;
-                    break;
-                case 11:
-                    day = 30;
-                    break;
-                case 12:
-                    day = 31;
-                    break;
-            }
-        }
-        else {
-            day = day - 1;
-        }
-        return year + "-" + month + "-" + day;
-    };
-    return Time;
-}());
 var Render = /** @class */ (function () {
     function Render() {
     }
@@ -330,6 +88,7 @@ var Render = /** @class */ (function () {
         });
     };
     Render.prototype.changeVideoModalEl = function (video, backString) {
+        var _this = this;
         var videoEl = document.createElement('video');
         var sourceEl = document.createElement('source');
         var backButtonEl = document.createElement('button');
@@ -341,8 +100,7 @@ var Render = /** @class */ (function () {
                 init.initTeamScreen(UserInfo.favouriteTeam.id);
             }
             else if ('last-night') {
-                var render = new Render();
-                render.renderLastNightGames();
+                _this.renderLastNightGames();
             }
             videoModalEl.innerHTML = '';
         });
@@ -423,7 +181,6 @@ var Render = /** @class */ (function () {
                         gameListEl.innerHTML = '';
                         gameListEl.append(previousGameEl);
                         gameListEl.append(nextGameEl);
-                        // this.changeNextGameLiEl(nextGame)
                         chosenTeamH1El.textContent = UserInfo.favouriteTeam.name;
                         lastNightScreenEl.style.display = 'none';
                         chooseTeamScreen.style.display = 'none';
@@ -436,13 +193,12 @@ var Render = /** @class */ (function () {
     };
     Render.prototype.renderGraphScreen = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var api, winsLosses, labels, data;
+            var api, winsLosses, labels, data, newMyChartEl, backButtonEl;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         chooseTeamScreen.style.display = 'none';
                         teamScreen.style.display = 'none';
-                        graphEl.style.display = 'block';
                         graphScreenEl.style.display = 'block';
                         if (myChart)
                             myChart.destroy();
@@ -457,7 +213,20 @@ var Render = /** @class */ (function () {
                             labels = ['Wins', 'Losses'];
                         }
                         data = [winsLosses.wins, winsLosses.losses, winsLosses.overtime];
-                        myChart = new Chart(graphEl, {
+                        newMyChartEl = document.createElement('canvas');
+                        console.log(window.innerWidth);
+                        if (window.innerWidth > 1100) {
+                            newMyChartEl.setAttribute('height', '150');
+                        }
+                        else if (window.innerWidth > 800) {
+                            console.log('hej');
+                            newMyChartEl.setAttribute('height', '200');
+                        }
+                        else {
+                            newMyChartEl.setAttribute('height', '500');
+                        }
+                        newMyChartEl.setAttribute('width', '400');
+                        newMyChart = new Chart(newMyChartEl, {
                             type: 'bar',
                             data: {
                                 labels: labels,
@@ -493,6 +262,15 @@ var Render = /** @class */ (function () {
                                 }
                             }
                         });
+                        backButtonEl = document.createElement('button');
+                        backButtonEl.setAttribute('id', 'graph-back');
+                        backButtonEl.textContent = 'Back';
+                        backButtonEl.addEventListener('click', function () {
+                            init.initTeamScreen(UserInfo.favouriteTeam.id);
+                        });
+                        graphScreenEl.innerHTML = '';
+                        graphScreenEl.append(backButtonEl);
+                        graphScreenEl.append(newMyChartEl);
                         return [2 /*return*/];
                 }
             });
@@ -539,72 +317,3 @@ var Render = /** @class */ (function () {
     };
     return Render;
 }());
-var Init = /** @class */ (function () {
-    function Init() {
-    }
-    Init.prototype.initChooseTeamScreen = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var render;
-            return __generator(this, function (_a) {
-                if (!UserInfo.favouriteTeam) {
-                    render = new Render();
-                    render.renderChooseTeamScreen();
-                }
-                else {
-                    this.initTeamScreen(UserInfo.favouriteTeam.id);
-                }
-                return [2 /*return*/];
-            });
-        });
-    };
-    Init.prototype.initTeamScreen = function (id) {
-        return __awaiter(this, void 0, void 0, function () {
-            var api, render, team, previousGame, nextGame;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        api = new Api();
-                        render = new Render();
-                        return [4 /*yield*/, api.fetchAndReturnTeam(id)];
-                    case 1:
-                        team = _a.sent();
-                        return [4 /*yield*/, api.fetchAndReturnGame(team.previousGameSchedule.dates[0].games[0].gamePk)];
-                    case 2:
-                        previousGame = _a.sent();
-                        return [4 /*yield*/, api.fetchAndReturnGame(team.nextGameSchedule.dates[0].games[0].gamePk)];
-                    case 3:
-                        nextGame = _a.sent();
-                        render.renderTeamScreen(previousGame, nextGame);
-                        return [2 /*return*/];
-                }
-            });
-        });
-    };
-    return Init;
-}());
-var init = new Init();
-init.initChooseTeamScreen();
-selectTeamForm.addEventListener('submit', function (e) {
-    e.preventDefault();
-    init.initTeamScreen(parseInt(teamSelectEl.value));
-    var userInfo = new UserInfo();
-    userInfo.setFavouriteTeam(parseInt(teamSelectEl.value));
-});
-settingsButtonEl.addEventListener('click', function () {
-    var render = new Render();
-    render.renderChooseTeamScreen();
-});
-winsLossesButtonEl.addEventListener('click', function () {
-    var render = new Render();
-    render.renderGraphScreen();
-});
-lastNightGamesButtonEl.addEventListener('click', function () {
-    var render = new Render();
-    render.renderLastNightGames();
-});
-lastNightBackButtonEl.addEventListener('click', function () {
-    init.initTeamScreen(UserInfo.favouriteTeam.id);
-});
-graphBackButtonEl.addEventListener('click', function () {
-    init.initTeamScreen(UserInfo.favouriteTeam.id);
-});

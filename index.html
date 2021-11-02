@@ -5,8 +5,12 @@
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
-		<script src="app.js" defer></script>
-		<link rel="stylesheet" href="./index.css" />
+		<script src="./dist/api.js" defer></script>
+		<script src="./dist/time.js" defer></script>
+		<script src="./dist/userinfo.js" defer></script>
+		<script src="./dist/render.js" defer></script>
+		<script src="./dist/app.js" defer></script>
+		<link rel="stylesheet" href="./dist/index.css" />
 		<title>Favourite Team</title>
 	</head>
 	<body>
@@ -30,13 +34,6 @@
       <input type="button" value="Last night's games" id="last-night-games">
 		</article>
 		<div id="graph-screen" style="display: none">
-			<button id="graph-back">Back</button>
-			<canvas
-				id="myChart"
-				width="400"
-				height="400"
-				style="display: none"
-			></canvas>
 		</div>
 		<aside id="video-modal" style="display: none"></aside>
     <article id="last-night-screen" style="display: none;">

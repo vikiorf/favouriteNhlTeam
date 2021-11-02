@@ -1,4 +1,8 @@
-/* #choose-team-screen {
+body {
+  background-color: #FFFAFA;
+}
+
+#choose-team-screen {
   display: flex;
   flex-direction: column;
 }
@@ -9,7 +13,8 @@
 }
 
 #select-team-form {
-  border: 1px solid black;
+  background-color: #89D2DC;
+  border: 1px solid #101D42;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -49,12 +54,14 @@
 
 .game-item {
   height: 100px;
-  border: 1px solid black;
+  border: 1px solid #101D42;
+  background-color: #89D2DC;
   border-radius: 10px;
   display: grid;
-  grid-template-columns: 1fr .1fr 1fr;
+  grid-template-columns: 1fr 0.1fr 1fr;
   justify-items: center;
 }
+
 .third-column {
   grid-column: 3;
 }
@@ -66,9 +73,8 @@
   background-color: gray;
   opacity: 0.9;
   display: grid;
-  grid-template-rows: .2fr 1fr;
+  grid-template-rows: 0.2fr 1fr;
 }
-
 #video-modal button {
   background-color: white;
   opacity: 1;
@@ -88,7 +94,6 @@
   display: flex;
   flex-direction: column;
 }
-
 #last-night-screen div {
   display: grid;
 }
@@ -104,4 +109,6 @@
   grid-column: 1;
   align-self: center;
   justify-self: center;
-} */
+}
+
+/*# sourceMappingURL=index.css.map */
