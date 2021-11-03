@@ -1,0 +1,20 @@
+.second-column {
+	grid-column: 2;
+}
+
+.third-column {
+	grid-column: 3;
+}
+
+.btn {
+	background-color: $primary-btn-color;
+	border: 1px solid $primary-border-color;
+	border-radius: 5px;
+	margin-top: 20px;
+	height: 50px;
+	width: 200px;
+	align-self: center;
+}
+.back-btn {
+  
+}

@@ -1,4 +1,8 @@
 "use strict";
+/*
+  Documentation:
+  https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md
+*/
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -35,7 +39,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-// https://gitlab.com/dword4/nhlapi/-/blob/master/stats-api.md
 var chooseTeamScreen = document.querySelector('#choose-team-screen');
 var teamScreen = document.querySelector('#team-screen');
 var selectTeamForm = document.querySelector('#select-team-form');
@@ -52,11 +55,19 @@ var lastNightScreenEl = document.querySelector('#last-night-screen');
 var lastNightGamesButtonEl = document.querySelector('#last-night-games');
 var lastNightBackButtonEl = document.querySelector('#last-night-back-button');
 var lastNightGameList = document.querySelector('#last-night-game-list');
+var lastNightHeadingEl = document.querySelector('#last-night-heading');
 var myChart;
 var newMyChart;
+/**
+ * Initializes the app, and different screens
+ */
 var Init = /** @class */ (function () {
     function Init() {
     }
+    /**
+     * Initializes the first screen of the app if no team is saved.
+     * If a team is saved go to initTeamScreen
+     */
     Init.prototype.initChooseTeamScreen = function () {
         return __awaiter(this, void 0, void 0, function () {
             var render;
@@ -72,6 +83,10 @@ var Init = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Starts the process of rendering the team screen.
+     * @param id Id of the team to be displayed
+     */
     Init.prototype.initTeamScreen = function (id) {
         return __awaiter(this, void 0, void 0, function () {
             var api, render, team, previousGame, nextGame;
@@ -89,6 +104,7 @@ var Init = /** @class */ (function () {
                         return [4 /*yield*/, api.fetchAndReturnGame(team.nextGameSchedule.dates[0].games[0].gamePk)];
                     case 3:
                         nextGame = _a.sent();
+                        nextGame.date = team.nextGameSchedule.dates[0].date;
                         render.renderTeamScreen(previousGame, nextGame);
                         return [2 /*return*/];
                 }

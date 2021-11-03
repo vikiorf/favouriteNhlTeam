@@ -1,0 +1,33 @@
+@media screen and (min-width: 600px) {
+  .game-list {
+    padding-left: 200px;
+    padding-right: 200px;
+  }
+
+  #choose-team-screen {
+    padding-left: 200px;
+    padding-right: 200px;
+  }
+}
+
+@media screen and (min-width: 1000px) {
+  .game-list {
+    padding-left: 400px;
+    padding-right: 400px;
+  }
+  #choose-team-screen {
+    padding-left: 400px;
+    padding-right: 400px;
+  }
+}
+
+@media screen and (min-width: 1500px) {
+  .game-list {
+    padding-left: 600px;
+    padding-right: 600px;
+  }
+  #choose-team-screen {
+    padding-left: 600px;
+    padding-right: 600px;
+  }
+}

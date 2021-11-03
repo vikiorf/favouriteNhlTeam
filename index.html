@@ -4,6 +4,7 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A site where you can see your favourite nhl team and last nights nhl scores">
 		<script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
 		<script src="./dist/api.js" defer></script>
 		<script src="./dist/time.js" defer></script>
@@ -18,7 +19,7 @@
 			<h1 id="choose-team-heading">Choose team</h1>
 			<form id="select-team-form">
 				<select name="team-select" id="team-select"></select>
-				<input type="submit" value="Go" id="choose-team" />
+				<input class="btn" type="submit" value="Go" id="choose-team" />
 			</form>
 		</article>
 		<article id="team-screen" style="display: none">
@@ -30,8 +31,8 @@
 				<li class="game-item" id="previous-game"></li>
 				<li class="game-item" id="next-game">Next game</li>
 			</ul>
-			<input type="button" value="Wins/Losses" id="wins-losses" />
-      <input type="button" value="Last night's games" id="last-night-games">
+			<input class="btn" type="button" value="Wins/Losses" id="wins-losses" />
+      <input class="btn" type="button" value="Last night's games" id="last-night-games">
 		</article>
 		<div id="graph-screen" style="display: none">
 		</div>
@@ -39,7 +40,7 @@
     <article id="last-night-screen" style="display: none;">
       <div>
         <button id="last-night-back-button">Back</button>
-        <h1>Date</h1>
+        <h1 id="last-night-heading">Date</h1>
       </div>
       <ul id="last-night-game-list" class="game-list"></ul>
     </article>

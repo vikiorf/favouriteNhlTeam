@@ -1,4 +1,8 @@
 class Api {
+  /**
+   * Fetches all teams currently playing in the NHL
+   * @returns All teams in the NHL
+   */
   async fetchAndReturnTeams(): Promise<TeamItem[]> {
     const teams: TeamItem[] = await fetch(
       'https://statsapi.web.nhl.com/api/v1/teams'
@@ -10,6 +14,11 @@ class Api {
     return teams
   }
 
+  /**
+   * Fetches a team from the id and returns chosen team
+   * @param id Team Id
+   * @returns Chosen team as TeamItem
+   */
   async fetchAndReturnTeam(id: number): Promise<TeamItem> {
     const team: TeamItem = await fetch(
       `https://statsapi.web.nhl.com/api/v1/teams/${id}?expand=team.schedule.next&expand=team.schedule.previous`
@@ -21,6 +30,11 @@ class Api {
     return team
   }
 
+  /**
+   * Fetches the chosen game and media for the chosen game
+   * @param id Game Id
+   * @returns Game along with media for the game
+   */
   async fetchAndReturnGame(id: string): Promise<GameItem> {
     let game = await fetch(
       `https://statsapi.web.nhl.com/api/v1/game/${id}/linescore`
@@ -39,6 +53,11 @@ class Api {
     return game
   }
 
+  /**
+   * Fetches wins and losses and overtime for the chosen team
+   * @param teamId Id of the team
+   * @returns Wins and losses for the chosen team
+   */
   async fetchAndReturnTeamWinsAndLosses(
     teamId: number
   ): Promise<{ wins: number; losses: number; overtime: number }> {
@@ -70,6 +89,11 @@ class Api {
     return winsLosses
   }
 
+  /**
+   * Returns all games played at the certain date
+   * @param date Date as a string
+   * @returns Games from the chosen date
+   */
   async fetchAndReturnGamesFromDate(date: string): Promise<[]> {
     return await fetch(
       `https://statsapi.web.nhl.com/api/v1/schedule?date=${date}`

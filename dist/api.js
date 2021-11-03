@@ -38,6 +38,10 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var Api = /** @class */ (function () {
     function Api() {
     }
+    /**
+     * Fetches all teams currently playing in the NHL
+     * @returns All teams in the NHL
+     */
     Api.prototype.fetchAndReturnTeams = function () {
         return __awaiter(this, void 0, void 0, function () {
             var teams;
@@ -55,6 +59,11 @@ var Api = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Fetches a team from the id and returns chosen team
+     * @param id Team Id
+     * @returns Chosen team as TeamItem
+     */
     Api.prototype.fetchAndReturnTeam = function (id) {
         return __awaiter(this, void 0, void 0, function () {
             var team;
@@ -72,6 +81,11 @@ var Api = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Fetches the chosen game and media for the chosen game
+     * @param id Game Id
+     * @returns Game along with media for the game
+     */
     Api.prototype.fetchAndReturnGame = function (id) {
         var _a;
         return __awaiter(this, void 0, void 0, function () {
@@ -95,6 +109,11 @@ var Api = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Fetches wins and losses and overtime for the chosen team
+     * @param teamId Id of the team
+     * @returns Wins and losses for the chosen team
+     */
     Api.prototype.fetchAndReturnTeamWinsAndLosses = function (teamId) {
         return __awaiter(this, void 0, void 0, function () {
             var records, winsLosses;
@@ -126,6 +145,11 @@ var Api = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Returns all games played at the certain date
+     * @param date Date as a string
+     * @returns Games from the chosen date
+     */
     Api.prototype.fetchAndReturnGamesFromDate = function (date) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {

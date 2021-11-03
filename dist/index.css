@@ -1,5 +1,5 @@
 body {
-  background-color: #FFFAFA;
+  background-color: #fffafa;
 }
 
 #choose-team-screen {
@@ -13,14 +13,20 @@ body {
 }
 
 #select-team-form {
-  background-color: #89D2DC;
-  border: 1px solid #101D42;
+  background-color: #89d2dc;
+  border: 1px solid #101d42;
   border-radius: 10px;
   display: flex;
   flex-direction: column;
-  height: 100px;
+  padding: 20px;
   align-items: center;
   justify-content: center;
+}
+#select-team-form #team-select {
+  border-radius: 5px;
+  height: 50px;
+  text-align: center;
+  width: 200px;
 }
 
 #team-screen {
@@ -54,16 +60,12 @@ body {
 
 .game-item {
   height: 100px;
-  border: 1px solid #101D42;
-  background-color: #89D2DC;
+  border: 1px solid #101d42;
+  background-color: #89d2dc;
   border-radius: 10px;
   display: grid;
   grid-template-columns: 1fr 0.1fr 1fr;
   justify-items: center;
-}
-
-.third-column {
-  grid-column: 3;
 }
 
 #video-modal {
@@ -71,13 +73,11 @@ body {
   inset: 0;
   padding: 10px;
   background-color: gray;
-  opacity: 0.9;
   display: grid;
   grid-template-rows: 0.2fr 1fr;
 }
 #video-modal button {
   background-color: white;
-  opacity: 1;
   width: 40px;
   height: 40px;
   grid-row: 1;
@@ -109,6 +109,58 @@ body {
   grid-column: 1;
   align-self: center;
   justify-self: center;
+}
+
+.second-column {
+  grid-column: 2;
+}
+
+.third-column {
+  grid-column: 3;
+}
+
+.btn {
+  background-color: #FF7F11;
+  border: 1px solid #101d42;
+  border-radius: 5px;
+  margin-top: 20px;
+  height: 50px;
+  width: 200px;
+  align-self: center;
+}
+
+@media screen and (min-width: 600px) {
+  .game-list {
+    padding-left: 200px;
+    padding-right: 200px;
+  }
+
+  #choose-team-screen {
+    padding-left: 200px;
+    padding-right: 200px;
+  }
+}
+@media screen and (min-width: 1000px) {
+  .game-list {
+    padding-left: 400px;
+    padding-right: 400px;
+  }
+
+  #choose-team-screen {
+    padding-left: 400px;
+    padding-right: 400px;
+  }
+}
+@media screen and (min-width: 1500px) {
+  .game-list {
+    padding-left: 600px;
+    padding-right: 600px;
+  }
+
+  #choose-team-screen {
+    padding-left: 600px;
+    padding-right: 600px;
+  }
 }
 
 /*# sourceMappingURL=index.css.map */

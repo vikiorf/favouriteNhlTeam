@@ -35,12 +35,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+/**
+ * Handles all the rendering for the app
+ */
 var Render = /** @class */ (function () {
     function Render() {
     }
+    /**
+     * Creates an li-element with scores hidden if the game is not yet watched
+     * or, if the game is watched, scores
+     * @param gameItem The game that needs an element
+     * @param screen Which screen that should be rendered when clicking back on video-modal
+     * @returns An li-element with scores either hidden or displayed
+     */
     Render.prototype.createGameItemWithScore = function (gameItem, screen) {
         return __awaiter(this, void 0, void 0, function () {
-            var api, gameLiEl, awayTeamPEl, homeTeamPEl, atCharacterPEl, awayTeamScorePEl, homeTeamScorePEl, awayTeam, homeTeam, userInfo, watchedGame;
+            var api, gameLiEl, awayTeamPEl, homeTeamPEl, atCharacterPEl, awayTeamScorePEl, homeTeamScorePEl, overtimeSoPEl, awayTeam, homeTeam, userInfo, watchedGame;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -52,6 +62,7 @@ var Render = /** @class */ (function () {
                         atCharacterPEl = document.createElement('p');
                         awayTeamScorePEl = document.createElement('p');
                         homeTeamScorePEl = document.createElement('p');
+                        overtimeSoPEl = document.createElement('p');
                         gameLiEl.classList.add('game-item');
                         homeTeamScorePEl.classList.add('third-column');
                         return [4 /*yield*/, api.fetchAndReturnTeam(gameItem.teams.away.team.id)];
@@ -65,6 +76,7 @@ var Render = /** @class */ (function () {
                         atCharacterPEl.textContent = '@';
                         userInfo = new UserInfo();
                         watchedGame = userInfo.checkIfGameIsWatched(gameItem.id);
+                        // If the game is not watched, hide scores else display scores
                         if (!watchedGame) {
                             awayTeamScorePEl.textContent = '*';
                             homeTeamScorePEl.textContent = '*';
@@ -72,6 +84,13 @@ var Render = /** @class */ (function () {
                         else {
                             awayTeamScorePEl.textContent = gameItem.teams.away.goals.toString();
                             homeTeamScorePEl.textContent = gameItem.teams.home.goals.toString();
+                            // Checking if game went to overtime or penalty shots
+                            if (gameItem.hasShootout) {
+                                overtimeSoPEl.textContent = 'SO';
+                            }
+                            else if (gameItem.periods.length === 4) {
+                                overtimeSoPEl.textContent = 'OT';
+                            }
                         }
                         gameLiEl.addEventListener('click', function () {
                             _this.changeVideoModalEl(gameItem.video, screen);
@@ -81,12 +100,19 @@ var Render = /** @class */ (function () {
                         gameLiEl.append(atCharacterPEl);
                         gameLiEl.append(homeTeamPEl);
                         gameLiEl.append(awayTeamScorePEl);
+                        gameLiEl.append(overtimeSoPEl);
                         gameLiEl.append(homeTeamScorePEl);
                         return [2 /*return*/, gameLiEl];
                 }
             });
         });
     };
+    /**
+     * Changes the content and displays the video-modal.
+     * Displays a video and a backbutton
+     * @param video string-link of the video for the game
+     * @param backString Which screen to be rendered when clicking back
+     */
     Render.prototype.changeVideoModalEl = function (video, backString) {
         var _this = this;
         var videoEl = document.createElement('video');
@@ -106,7 +132,12 @@ var Render = /** @class */ (function () {
         });
         backButtonEl.textContent = 'Back';
         videoEl.setAttribute('controls', '');
-        videoEl.setAttribute('width', '250');
+        if (window.innerWidth > 1100) {
+            videoEl.setAttribute('width', '1000');
+        }
+        else {
+            videoEl.setAttribute('width', '250');
+        }
         sourceEl.setAttribute('src', video);
         sourceEl.setAttribute('type', 'video/mp4');
         videoEl.append(sourceEl);
@@ -115,35 +146,49 @@ var Render = /** @class */ (function () {
         videoModalEl.append(videoEl);
         videoModalEl.style.display = 'grid';
     };
-    Render.prototype.createGameItemWithoutScore = function (nextGame) {
+    /**
+     * Creates an li-element with hometeam, awayteam and date for
+     * when the game is set to be played
+     * @param game Game which does not require score to be displayed
+     * @returns LI-element with hometeam, awayteam and date for the game
+     */
+    Render.prototype.createGameItemWithoutScore = function (game) {
         return __awaiter(this, void 0, void 0, function () {
-            var api, newNextGameLiEl, nextGameAwayTeam, nextGameHomeTeam, nextGameAwayTeamPEl, nextGameHomeTeamPEl, atCharacterPEl;
+            var api, newNextGameLiEl, nextGameAwayTeam, nextGameHomeTeam, nextGameAwayTeamPEl, nextGameHomeTeamPEl, atCharacterPEl, datePEl;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         api = new Api();
                         newNextGameLiEl = document.createElement('li');
                         newNextGameLiEl.classList.add('game-item');
-                        return [4 /*yield*/, api.fetchAndReturnTeam(nextGame.teams.away.team.id)];
+                        return [4 /*yield*/, api.fetchAndReturnTeam(game.teams.away.team.id)];
                     case 1:
                         nextGameAwayTeam = _a.sent();
-                        return [4 /*yield*/, api.fetchAndReturnTeam(nextGame.teams.home.team.id)];
+                        return [4 /*yield*/, api.fetchAndReturnTeam(game.teams.home.team.id)];
                     case 2:
                         nextGameHomeTeam = _a.sent();
                         nextGameAwayTeamPEl = document.createElement('p');
                         nextGameHomeTeamPEl = document.createElement('p');
                         atCharacterPEl = document.createElement('p');
+                        datePEl = document.createElement('p');
+                        datePEl.classList.add('second-column');
                         nextGameAwayTeamPEl.textContent = nextGameAwayTeam.abbreviation;
                         nextGameHomeTeamPEl.textContent = nextGameHomeTeam.abbreviation;
                         atCharacterPEl.textContent = '@';
+                        datePEl.textContent = game.date;
                         newNextGameLiEl.append(nextGameAwayTeamPEl);
                         newNextGameLiEl.append(atCharacterPEl);
                         newNextGameLiEl.append(nextGameHomeTeamPEl);
+                        newNextGameLiEl.append(datePEl);
                         return [2 /*return*/, newNextGameLiEl];
                 }
             });
         });
     };
+    /**
+     * Displays first screen and hides the other screens.
+     * Calls for all teams and add them to the select as an option
+     */
     Render.prototype.renderChooseTeamScreen = function () {
         return __awaiter(this, void 0, void 0, function () {
             var api, teams;
@@ -167,6 +212,12 @@ var Render = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Creates an item for each parameter and appends them to teamscreen.
+   * Displays screen and hides other screens
+     * @param previousGame The previous game from TeamItem
+     * @param nextGame The next game from TeamItem
+     */
     Render.prototype.renderTeamScreen = function (previousGame, nextGame) {
         return __awaiter(this, void 0, void 0, function () {
             var previousGameEl, nextGameEl;
@@ -191,6 +242,10 @@ var Render = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Method which calls for a teams wins and losses then
+     * renders a graph based on the result
+     */
     Render.prototype.renderGraphScreen = function () {
         return __awaiter(this, void 0, void 0, function () {
             var api, winsLosses, labels, data, newMyChartEl, backButtonEl;
@@ -200,8 +255,6 @@ var Render = /** @class */ (function () {
                         chooseTeamScreen.style.display = 'none';
                         teamScreen.style.display = 'none';
                         graphScreenEl.style.display = 'block';
-                        if (myChart)
-                            myChart.destroy();
                         api = new Api();
                         return [4 /*yield*/, api.fetchAndReturnTeamWinsAndLosses(UserInfo.favouriteTeam.id)];
                     case 1:
@@ -214,12 +267,10 @@ var Render = /** @class */ (function () {
                         }
                         data = [winsLosses.wins, winsLosses.losses, winsLosses.overtime];
                         newMyChartEl = document.createElement('canvas');
-                        console.log(window.innerWidth);
                         if (window.innerWidth > 1100) {
                             newMyChartEl.setAttribute('height', '150');
                         }
                         else if (window.innerWidth > 800) {
-                            console.log('hej');
                             newMyChartEl.setAttribute('height', '200');
                         }
                         else {
@@ -276,6 +327,10 @@ var Render = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Method which calls for all games played last night and creates an element
+     * for them then appends them to the game-list
+     */
     Render.prototype.renderLastNightGames = function () {
         return __awaiter(this, void 0, void 0, function () {
             var date, time, api, yesterdayDate, fetchedGames;
@@ -288,12 +343,11 @@ var Render = /** @class */ (function () {
                         date = new Date();
                         time = new Time();
                         api = new Api();
-                        return [4 /*yield*/, time.calculateAndReturnLastYesterdayDate(date)];
-                    case 1:
-                        yesterdayDate = _a.sent();
+                        yesterdayDate = time.calculateAndReturnLastYesterdayDate(date);
                         return [4 /*yield*/, api.fetchAndReturnGamesFromDate(yesterdayDate)];
-                    case 2:
+                    case 1:
                         fetchedGames = _a.sent();
+                        lastNightHeadingEl.textContent = yesterdayDate;
                         lastNightGameList.innerHTML = '';
                         fetchedGames.forEach(function (game) { return __awaiter(_this, void 0, void 0, function () {
                             var gameItem, gameLiEl;

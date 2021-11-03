@@ -44,9 +44,17 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
     }
     return to.concat(ar || Array.prototype.slice.call(from));
 };
+/**
+ * Handles saved information that the user decides
+ */
 var UserInfo = /** @class */ (function () {
     function UserInfo() {
     }
+    /**
+     * Marks chosen team as favourite and saves it to localstorage
+     * Overwrites current favourite team
+     * @param key Team Id
+     */
     UserInfo.prototype.setFavouriteTeam = function (key) {
         return __awaiter(this, void 0, void 0, function () {
             var api, team;
@@ -64,6 +72,10 @@ var UserInfo = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Marks chosen game as watched by saving it to localstorage
+     * @param id Game Id
+     */
     UserInfo.prototype.markGameAsWatched = function (id) {
         var games = __spreadArray([], UserInfo.watchedGames, true);
         var foundGameId = games.findIndex(function (gameId) { return gameId === id; });
@@ -73,6 +85,11 @@ var UserInfo = /** @class */ (function () {
             localStorage.setItem('watched-games', JSON.stringify(games));
         }
     };
+    /**
+     * Checks if game is watched and returns boolean based on that
+     * @param gameId The id of the game
+     * @returns True if game is watched else false
+     */
     UserInfo.prototype.checkIfGameIsWatched = function (gameId) {
         var watched = UserInfo.watchedGames.findIndex(function (_gameId) { return _gameId === gameId; });
         if (watched === -1) {
