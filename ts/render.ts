@@ -9,64 +9,64 @@ class Render {
    * @param screen Which screen that should be rendered when clicking back on video-modal
    * @returns An li-element with scores either hidden or displayed
    */
-	async createGameItemWithScore(
-		gameItem: GameItem,
-		screen: string
-	): Promise<HTMLLIElement> {
-		const api = new Api()
+  async createGameItemWithScore(
+    gameItem: GameItem,
+    screen: string
+  ): Promise<HTMLLIElement> {
+    const api = new Api()
 
-		const gameLiEl = document.createElement('li')
-		const awayTeamPEl = document.createElement('p')
-		const homeTeamPEl = document.createElement('p')
-		const atCharacterPEl = document.createElement('p')
-		const awayTeamScorePEl = document.createElement('p')
-		const homeTeamScorePEl = document.createElement('p')
-		const overtimeSoPEl = document.createElement('p')
+    const gameLiEl = document.createElement('li')
+    const awayTeamPEl = document.createElement('p')
+    const homeTeamPEl = document.createElement('p')
+    const atCharacterPEl = document.createElement('p')
+    const awayTeamScorePEl = document.createElement('p')
+    const homeTeamScorePEl = document.createElement('p')
+    const overtimeSoPEl = document.createElement('p')
 
-		gameLiEl.classList.add('game-item')
-		homeTeamScorePEl.classList.add('third-column')
+    gameLiEl.classList.add('game-item')
+    homeTeamScorePEl.classList.add('third-column')
 
-		const awayTeam = await api.fetchAndReturnTeam(gameItem.teams.away.team.id)
-		const homeTeam = await api.fetchAndReturnTeam(gameItem.teams.home.team.id)
+    const awayTeam = await api.fetchAndReturnTeam(gameItem.teams.away.team.id)
+    const homeTeam = await api.fetchAndReturnTeam(gameItem.teams.home.team.id)
 
-		awayTeamPEl.textContent = awayTeam.abbreviation
-		homeTeamPEl.textContent = homeTeam.abbreviation
-		atCharacterPEl.textContent = '@'
+    awayTeamPEl.textContent = awayTeam.abbreviation
+    homeTeamPEl.textContent = homeTeam.abbreviation
+    atCharacterPEl.textContent = '@'
 
-		const userInfo = new UserInfo()
+    const userInfo = new UserInfo()
 
-		const watchedGame = userInfo.checkIfGameIsWatched(gameItem.id)
+    const watchedGame = userInfo.checkIfGameIsWatched(gameItem.id)
 
-		// If the game is not watched, hide scores else display scores
-		if (!watchedGame) {
-			awayTeamScorePEl.textContent = '*'
-			homeTeamScorePEl.textContent = '*'
-		} else {
-			awayTeamScorePEl.textContent = gameItem.teams.away.goals.toString()
-			homeTeamScorePEl.textContent = gameItem.teams.home.goals.toString()
+    // If the game is not watched, hide scores else display scores
+    if (!watchedGame) {
+      awayTeamScorePEl.textContent = '*'
+      homeTeamScorePEl.textContent = '*'
+    } else {
+      awayTeamScorePEl.textContent = gameItem.teams.away.goals.toString()
+      homeTeamScorePEl.textContent = gameItem.teams.home.goals.toString()
 
-			// Checking if game went to overtime or penalty shots
-			if (gameItem.hasShootout) {
-				overtimeSoPEl.textContent = 'SO'
-			} else if (gameItem.periods.length === 4) {
-				overtimeSoPEl.textContent = 'OT'
-			}
-		}
+      // Checking if game went to overtime or penalty shots
+      if (gameItem.hasShootout) {
+        overtimeSoPEl.textContent = 'SO'
+      } else if (gameItem.periods.length === 4) {
+        overtimeSoPEl.textContent = 'OT'
+      }
+    }
 
-		gameLiEl.addEventListener('click', () => {
-			this.changeVideoModalEl(gameItem.video, screen)
-			userInfo.markGameAsWatched(gameItem.id)
-		})
+    gameLiEl.addEventListener('click', () => {
+      this.changeVideoModalEl(gameItem.video, screen)
+      userInfo.markGameAsWatched(gameItem.id)
+    })
 
-		gameLiEl.append(awayTeamPEl)
-		gameLiEl.append(atCharacterPEl)
-		gameLiEl.append(homeTeamPEl)
-		gameLiEl.append(awayTeamScorePEl)
-		gameLiEl.append(overtimeSoPEl)
-		gameLiEl.append(homeTeamScorePEl)
+    gameLiEl.append(awayTeamPEl)
+    gameLiEl.append(atCharacterPEl)
+    gameLiEl.append(homeTeamPEl)
+    gameLiEl.append(awayTeamScorePEl)
+    gameLiEl.append(overtimeSoPEl)
+    gameLiEl.append(homeTeamScorePEl)
 
-		return gameLiEl
-	}
+    return gameLiEl
+  }
 
   /**
    * Changes the content and displays the video-modal.
@@ -74,42 +74,42 @@ class Render {
    * @param video string-link of the video for the game
    * @param backString Which screen to be rendered when clicking back
    */
-	changeVideoModalEl(video: string, backString: string) {
-		const videoEl = document.createElement('video')
-		const sourceEl = document.createElement('source')
-		const backButtonEl = document.createElement('button')
+  changeVideoModalEl(video: string, backString: string) {
+    const videoEl = document.createElement('video')
+    const sourceEl = document.createElement('source')
+    const backButtonEl = document.createElement('button')
 
-		// Removes the modal
-		backButtonEl.addEventListener('click', () => {
-			const init = new Init()
-			videoModalEl.style.display = 'none'
-			if (backString === 'teamscreen') {
-				init.initTeamScreen(UserInfo.favouriteTeam.id)
-			} else if ('last-night') {
-				this.renderLastNightGames()
-			}
-			videoModalEl.innerHTML = ''
-		})
-		backButtonEl.textContent = 'Back'
+    // Removes the modal
+    backButtonEl.addEventListener('click', () => {
+      const init = new Init()
+      videoModalEl.style.display = 'none'
+      if (backString === 'teamscreen') {
+        init.initTeamScreen(UserInfo.favouriteTeam.id)
+      } else if ('last-night') {
+        this.renderLastNightGames()
+      }
+      videoModalEl.innerHTML = ''
+    })
+    backButtonEl.textContent = 'Back'
 
-		videoEl.setAttribute('controls', '')
-		if (window.innerWidth > 1100) {
-			videoEl.setAttribute('width', '1000')
-		} else {
-			videoEl.setAttribute('width', '250')
-		}
+    videoEl.setAttribute('controls', '')
+    if (window.innerWidth > 1100) {
+      videoEl.setAttribute('width', '1000')
+    } else {
+      videoEl.setAttribute('width', '250')
+    }
 
-		sourceEl.setAttribute('src', video)
-		sourceEl.setAttribute('type', 'video/mp4')
+    sourceEl.setAttribute('src', video)
+    sourceEl.setAttribute('type', 'video/mp4')
 
-		videoEl.append(sourceEl)
+    videoEl.append(sourceEl)
 
-		videoModalEl.innerHTML = ''
+    videoModalEl.innerHTML = ''
 
-		videoModalEl.append(backButtonEl)
-		videoModalEl.append(videoEl)
-		videoModalEl.style.display = 'grid'
-	}
+    videoModalEl.append(backButtonEl)
+    videoModalEl.append(videoEl)
+    videoModalEl.style.display = 'grid'
+  }
 
   /**
    * Creates an li-element with hometeam, awayteam and date for
@@ -117,198 +117,198 @@ class Render {
    * @param game Game which does not require score to be displayed
    * @returns LI-element with hometeam, awayteam and date for the game
    */
-	async createGameItemWithoutScore(game: GameItem): Promise<HTMLLIElement> {
-		const api = new Api()
+  async createGameItemWithoutScore(game: GameItem): Promise<HTMLLIElement> {
+    const api = new Api()
 
-		const newNextGameLiEl = document.createElement('li')
+    const newNextGameLiEl = document.createElement('li')
 
-		newNextGameLiEl.classList.add('game-item')
+    newNextGameLiEl.classList.add('game-item')
 
-		const nextGameAwayTeam = await api.fetchAndReturnTeam(
-			game.teams.away.team.id
-		)
-		const nextGameHomeTeam = await api.fetchAndReturnTeam(
-			game.teams.home.team.id
-		)
+    const nextGameAwayTeam = await api.fetchAndReturnTeam(
+      game.teams.away.team.id
+    )
+    const nextGameHomeTeam = await api.fetchAndReturnTeam(
+      game.teams.home.team.id
+    )
 
-		const nextGameAwayTeamPEl = document.createElement('p')
-		const nextGameHomeTeamPEl = document.createElement('p')
-		const atCharacterPEl = document.createElement('p')
-		const datePEl = document.createElement('p')
+    const nextGameAwayTeamPEl = document.createElement('p')
+    const nextGameHomeTeamPEl = document.createElement('p')
+    const atCharacterPEl = document.createElement('p')
+    const datePEl = document.createElement('p')
 
-		datePEl.classList.add('second-column')
+    datePEl.classList.add('second-column')
 
-		nextGameAwayTeamPEl.textContent = nextGameAwayTeam.abbreviation
-		nextGameHomeTeamPEl.textContent = nextGameHomeTeam.abbreviation
-		atCharacterPEl.textContent = '@'
-		datePEl.textContent = game.date
+    nextGameAwayTeamPEl.textContent = nextGameAwayTeam.abbreviation
+    nextGameHomeTeamPEl.textContent = nextGameHomeTeam.abbreviation
+    atCharacterPEl.textContent = '@'
+    datePEl.textContent = game.date
 
-		newNextGameLiEl.append(nextGameAwayTeamPEl)
-		newNextGameLiEl.append(atCharacterPEl)
-		newNextGameLiEl.append(nextGameHomeTeamPEl)
-		newNextGameLiEl.append(datePEl)
+    newNextGameLiEl.append(nextGameAwayTeamPEl)
+    newNextGameLiEl.append(atCharacterPEl)
+    newNextGameLiEl.append(nextGameHomeTeamPEl)
+    newNextGameLiEl.append(datePEl)
 
-		return newNextGameLiEl
-	}
+    return newNextGameLiEl
+  }
 
   /**
    * Displays first screen and hides the other screens.
    * Calls for all teams and add them to the select as an option
    */
-	async renderChooseTeamScreen(): Promise<void> {
-		chooseTeamScreen.style.display = 'flex'
-		teamScreen.style.display = 'none'
-		const api = new Api()
+  async renderChooseTeamScreen(): Promise<void> {
+    chooseTeamScreen.style.display = 'flex'
+    teamScreen.style.display = 'none'
+    const api = new Api()
 
-		const teams = await api.fetchAndReturnTeams()
-		teams.forEach((team) => {
-			const optionEl = document.createElement('option')
-			optionEl.textContent = team.name
-			optionEl.value = team.id.toString()
-			teamSelectEl.append(optionEl)
-		})
-	}
+    const teams = await api.fetchAndReturnTeams()
+    teams.forEach(team => {
+      const optionEl = document.createElement('option')
+      optionEl.textContent = team.name
+      optionEl.value = team.id.toString()
+      teamSelectEl.append(optionEl)
+    })
+  }
 
-	/**
-	 * Creates an item for each parameter and appends them to teamscreen.
+  /**
+   * Creates an item for each parameter and appends them to teamscreen.
    * Displays screen and hides other screens
-	 * @param previousGame The previous game from TeamItem
-	 * @param nextGame The next game from TeamItem
-	 */
-	async renderTeamScreen(
-		previousGame: GameItem,
-		nextGame: GameItem
-	): Promise<void> {
-		const previousGameEl = await this.createGameItemWithScore(
-			previousGame,
-			'teamscreen'
-		)
+   * @param previousGame The previous game from TeamItem
+   * @param nextGame The next game from TeamItem
+   */
+  async renderTeamScreen(
+    previousGame: GameItem,
+    nextGame: GameItem
+  ): Promise<void> {
+    const previousGameEl = await this.createGameItemWithScore(
+      previousGame,
+      'teamscreen'
+    )
 
-		const nextGameEl = await this.createGameItemWithoutScore(nextGame)
-		gameListEl.innerHTML = ''
-		gameListEl.append(previousGameEl)
-		gameListEl.append(nextGameEl)
+    const nextGameEl = await this.createGameItemWithoutScore(nextGame)
+    gameListEl.innerHTML = ''
+    gameListEl.append(previousGameEl)
+    gameListEl.append(nextGameEl)
 
-		chosenTeamH1El.textContent = UserInfo.favouriteTeam.name
-		lastNightScreenEl.style.display = 'none'
-		chooseTeamScreen.style.display = 'none'
-		graphScreenEl.style.display = 'none'
-		teamScreen.style.display = 'flex'
-	}
-	/**
-	 * Method which calls for a teams wins and losses then
-	 * renders a graph based on the result
-	 */
-	async renderGraphScreen(): Promise<void> {
-		chooseTeamScreen.style.display = 'none'
-		teamScreen.style.display = 'none'
-		graphScreenEl.style.display = 'block'
+    chosenTeamH1El.textContent = UserInfo.favouriteTeam.name
+    lastNightScreenEl.style.display = 'none'
+    chooseTeamScreen.style.display = 'none'
+    graphScreenEl.style.display = 'none'
+    teamScreen.style.display = 'flex'
+  }
+  /**
+   * Method which calls for a teams wins and losses then
+   * renders a graph based on the result
+   */
+  async renderGraphScreen(): Promise<void> {
+    chooseTeamScreen.style.display = 'none'
+    teamScreen.style.display = 'none'
+    graphScreenEl.style.display = 'block'
 
-		const api = new Api()
-		let winsLosses = await api.fetchAndReturnTeamWinsAndLosses(
-			UserInfo.favouriteTeam.id
-		)
+    const api = new Api()
+    let winsLosses = await api.fetchAndReturnTeamWinsAndLosses(
+      UserInfo.favouriteTeam.id
+    )
 
-		let labels: string[]
+    let labels: string[]
 
-		if (winsLosses.overtime) {
-			labels = ['Wins', 'Losses', 'Overtime']
-		} else {
-			labels = ['Wins', 'Losses']
-		}
+    if (winsLosses.overtime) {
+      labels = ['Wins', 'Losses', 'Overtime']
+    } else {
+      labels = ['Wins', 'Losses']
+    }
 
-		const data = [winsLosses.wins, winsLosses.losses, winsLosses.overtime]
+    const data = [winsLosses.wins, winsLosses.losses, winsLosses.overtime]
 
-		const newMyChartEl = document.createElement('canvas')
-		if (window.innerWidth > 1100) {
-			newMyChartEl.setAttribute('height', '150')
-		} else if (window.innerWidth > 800) {
-			newMyChartEl.setAttribute('height', '200')
-		} else {
-			newMyChartEl.setAttribute('height', '500')
-		}
-		newMyChartEl.setAttribute('width', '400')
+    const newMyChartEl = document.createElement('canvas')
+    if (window.innerWidth > 1100) {
+      newMyChartEl.setAttribute('height', '150')
+    } else if (window.innerWidth > 800) {
+      newMyChartEl.setAttribute('height', '200')
+    } else {
+      newMyChartEl.setAttribute('height', '500')
+    }
+    newMyChartEl.setAttribute('width', '400')
 
-		// Displays an error which I cannot get around
-		newMyChart = new Chart(newMyChartEl, {
-			type: 'bar',
-			data: {
-				labels: labels,
-				datasets: [
-					{
-						label: '# of Games',
-						data: data,
-						backgroundColor: [
-							'rgba(54, 162, 235, 0.2)',
-							'rgba(255, 99, 132, 0.2)',
-							'rgba(255, 206, 86, 0.2)',
-							'rgba(75, 192, 192, 0.2)',
-							'rgba(153, 102, 255, 0.2)',
-							'rgba(255, 159, 64, 0.2)'
-						],
-						borderColor: [
-							'rgba(54, 162, 235, 1)',
-							'rgba(255, 99, 132, 1)',
-							'rgba(255, 206, 86, 1)',
-							'rgba(75, 192, 192, 1)',
-							'rgba(153, 102, 255, 1)',
-							'rgba(255, 159, 64, 1)'
-						],
-						borderWidth: 1
-					}
-				]
-			},
-			options: {
-				scales: {
-					y: {
-						beginAtZero: true
-					}
-				}
-			}
-		})
+    // Displays an error which I cannot get around
+    newMyChart = new Chart(newMyChartEl, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: '# of Games',
+            data: data,
+            backgroundColor: [
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+              'rgba(153, 102, 255, 0.2)',
+              'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 99, 132, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+              'rgba(153, 102, 255, 1)',
+              'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+          }
+        ]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    })
 
-		const backButtonEl = document.createElement('button')
-		backButtonEl.setAttribute('id', 'graph-back')
-		backButtonEl.textContent = 'Back'
+    const backButtonEl = document.createElement('button')
+    backButtonEl.setAttribute('id', 'graph-back')
+    backButtonEl.textContent = 'Back'
 
-		backButtonEl.addEventListener('click', () => {
-			init.initTeamScreen(UserInfo.favouriteTeam.id)
-		})
+    backButtonEl.addEventListener('click', () => {
+      init.initTeamScreen(UserInfo.favouriteTeam.id)
+    })
 
-		graphScreenEl.innerHTML = ''
-		graphScreenEl.append(backButtonEl)
-		graphScreenEl.append(newMyChartEl)
-	}
+    graphScreenEl.innerHTML = ''
+    graphScreenEl.append(backButtonEl)
+    graphScreenEl.append(newMyChartEl)
+  }
 
-	/**
-	 * Method which calls for all games played last night and creates an element
-	 * for them then appends them to the game-list
-	 */
-	async renderLastNightGames(): Promise<void> {
-		lastNightScreenEl.style.display = 'flex'
-		teamScreen.style.display = 'none'
+  /**
+   * Method which calls for all games played last night and creates an element
+   * for them then appends them to the game-list
+   */
+  async renderLastNightGames(): Promise<void> {
+    lastNightScreenEl.style.display = 'flex'
+    teamScreen.style.display = 'none'
 
-		const date = new Date()
-		const time = new Time()
-		const api = new Api()
+    const date = new Date()
+    const time = new Time()
+    const api = new Api()
 
-		const yesterdayDate = time.calculateAndReturnLastYesterdayDate(date)
+    const yesterdayDate = time.calculateAndReturnLastYesterdayDate(date)
 
-		const fetchedGames: Array<any> = await api.fetchAndReturnGamesFromDate(
-			yesterdayDate
-		)
-		lastNightHeadingEl.textContent = yesterdayDate
+    const fetchedGames: Array<any> = await api.fetchAndReturnGamesFromDate(
+      yesterdayDate
+    )
+    lastNightHeadingEl.textContent = yesterdayDate
 
-		lastNightGameList.innerHTML = ''
-		fetchedGames.forEach(async (game: any) => {
-			const gameItem = await api.fetchAndReturnGame(game.gamePk)
+    lastNightGameList.innerHTML = ''
+    fetchedGames.forEach(async (game: any) => {
+      const gameItem = await api.fetchAndReturnGame(game.gamePk)
 
-			const gameLiEl = await this.createGameItemWithScore(
-				gameItem,
-				'last-night'
-			)
+      const gameLiEl = await this.createGameItemWithScore(
+        gameItem,
+        'last-night'
+      )
 
-			lastNightGameList.append(gameLiEl)
-		})
-	}
+      lastNightGameList.append(gameLiEl)
+    })
+  }
 }
