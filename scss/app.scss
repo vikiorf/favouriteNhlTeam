@@ -1,122 +1,136 @@
 @import 'config';
 
 body {
-	background-color: $primary-background-color;
+  background-color: $primary-background-color;
 }
 
 #choose-team-screen {
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 #choose-team-heading {
-	align-self: center;
-	font-size: 2rem;
+  align-self: center;
+  font-size: 2rem;
 }
 
 #select-team-form {
-	background-color: $primary-card-background-color;
-	border: 1px solid $primary-border-color;
-	border-radius: 10px;
-	display: flex;
-	flex-direction: column;
-	padding: 20px;
-	align-items: center;
-	justify-content: center;
-  
-	#team-select {
+  background-color: $primary-card-background-color;
+  border: 1px solid $primary-border-color;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  align-items: center;
+  justify-content: center;
+
+  #team-select {
     border-radius: 5px;
     height: 50px;
     text-align: center;
     width: 200px;
-	}
+  }
 }
 
 #team-screen {
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-	div {
-		display: grid;
-	}
+  div {
+    display: grid;
+  }
 }
 
 #settings-button {
-	grid-row: 1;
-	grid-column: 1;
-	align-self: center;
-	width: 30px;
-	height: 30px;
+  grid-row: 1;
+  grid-column: 1;
+  align-self: center;
+  width: 30px;
+  height: 30px;
 }
 
 #chosen-team {
-	grid-row: 1;
-	grid-column: 1;
-	justify-self: center;
+  grid-row: 1;
+  grid-column: 1;
+  justify-self: center;
 }
 
 .game-list {
-	display: grid;
-	gap: 20px;
-	list-style-type: none;
-	padding: 20px;
+  display: grid;
+  gap: 20px;
+  list-style-type: none;
+  padding: 20px;
 }
 
 .game-item {
-	height: 100px;
-	border: 1px solid $primary-border-color;
-	background-color: $primary-card-background-color;
-	border-radius: 10px;
-	display: grid;
-	grid-template-columns: 1fr 0.1fr 1fr;
-	justify-items: center;
+  height: 100px;
+  border: 1px solid $primary-border-color;
+  background-color: $primary-card-background-color;
+  border-radius: 10px;
+  display: grid;
+  grid-template-columns: 1fr 0.1fr 1fr;
+  justify-items: center;
 }
 
 #video-modal {
-	position: absolute;
-	inset: 0;
-	padding: 10px;
-	background-color: gray;
-	display: grid;
-	grid-template-rows: 0.2fr 1fr;
+  position: absolute;
+  inset: 0;
+  padding: 10px;
+  background-color: gray;
+  display: grid;
+  grid-template-rows: 0.2fr 1fr;
 
-	button {
-		background-color: white;
-		width: 40px;
-		height: 40px;
-		grid-row: 1;
-		grid-column: 1;
-	}
+  button {
+    border-radius: 5px;
+    width: 70px;
+    height: 35px;
+    border: 1px solid black;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    margin-right: 5px;
+    user-select: none;
+  }
 
-	video {
-		grid-row: 2;
-		grid-column: 1;
-		justify-self: center;
-		border: 1px solid black;
-	}
+  video {
+    grid-row: 2;
+    grid-column: 1;
+    justify-self: center;
+    border: 1px solid black;
+  }
 }
 
 #last-night-screen {
-	display: flex;
-	flex-direction: column;
+  display: flex;
+  flex-direction: column;
 
-	div {
-		display: grid;
+  div {
+    display: grid;
 
-		button {
-			grid-row: 1;
-			grid-column: 1;
-			width: 40px;
-			height: 40px;
-			align-self: center;
-		}
-		h1 {
-			grid-row: 1;
-			grid-column: 1;
-			align-self: center;
-			justify-self: center;
-		}
-	}
+    button {
+      grid-row: 1;
+      grid-column: 1;
+      border-radius: 5px;
+      width: 70px;
+      height: 35px;
+      border: 1px solid black;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-content: center;
+      margin-right: 5px;
+      user-select: none;
+    }
+    h1 {
+      grid-row: 1;
+      grid-column: 1;
+      align-self: center;
+      justify-self: center;
+    }
+  }
 }
 
 @import 'utilities';

@@ -3,7 +3,7 @@
  */
 class Render {
   /**
-   * Creates an li-element with scores hidden if the game is not yet watched 
+   * Creates an li-element with scores hidden if the game is not yet watched
    * or, if the game is watched, scores
    * @param gameItem The game that needs an element
    * @param screen Which screen that should be rendered when clicking back on video-modal
@@ -112,7 +112,7 @@ class Render {
 	}
 
   /**
-   * Creates an li-element with hometeam, awayteam and date for 
+   * Creates an li-element with hometeam, awayteam and date for
    * when the game is set to be played
    * @param game Game which does not require score to be displayed
    * @returns LI-element with hometeam, awayteam and date for the game
@@ -229,6 +229,7 @@ class Render {
 		}
 		newMyChartEl.setAttribute('width', '400')
 
+		// Displays an error which I cannot get around
 		newMyChart = new Chart(newMyChartEl, {
 			type: 'bar',
 			data: {
