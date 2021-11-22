@@ -45,6 +45,7 @@ const lastNightGameList = document.querySelector(
 const lastNightHeadingEl = document.querySelector(
   '#last-night-heading'
 )! as HTMLHeadingElement
+const bodyEl = document.body
 
 let myChart: any
 let newMyChart: any

@@ -2,6 +2,12 @@
 
 body {
   background-color: $primary-background-color;
+  margin: 0;
+}
+
+.body-grid {
+  display: grid;
+  grid-template-columns: .1fr 1fr;
 }
 
 #choose-team-screen {
@@ -33,11 +39,23 @@ body {
 }
 
 #team-screen {
+  padding: 10px;
   display: flex;
   flex-direction: column;
+  position: relative;
 
   div {
     display: grid;
+  }
+  &::before {
+    content: '';
+    height: 420px;
+    z-index: -1;
+    width: 100%;
+    left: 0;
+    top: 0;
+    background-color: #797A9E;
+    position: absolute;
   }
 }
 

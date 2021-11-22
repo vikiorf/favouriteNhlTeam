@@ -56,6 +56,7 @@ var lastNightGamesButtonEl = document.querySelector('#last-night-games');
 var lastNightBackButtonEl = document.querySelector('#last-night-back-button');
 var lastNightGameList = document.querySelector('#last-night-game-list');
 var lastNightHeadingEl = document.querySelector('#last-night-heading');
+var bodyEl = document.body;
 var myChart;
 var newMyChart;
 /**

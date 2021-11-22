@@ -194,6 +194,7 @@ class Render {
     chooseTeamScreen.style.display = 'none'
     graphScreenEl.style.display = 'none'
     teamScreen.style.display = 'flex'
+    bodyEl.classList.remove('body-grid')
   }
   /**
    * Method which calls for a teams wins and losses then
@@ -201,8 +202,14 @@ class Render {
    */
   async renderGraphScreen(): Promise<void> {
     chooseTeamScreen.style.display = 'none'
-    teamScreen.style.display = 'none'
     graphScreenEl.style.display = 'block'
+
+    if (window.innerWidth < 600) {
+      teamScreen.style.display = 'none'
+    } else {
+      bodyEl.classList.add('body-grid')
+    }
+
 
     const api = new Api()
     let winsLosses = await api.fetchAndReturnTeamWinsAndLosses(
@@ -220,14 +227,7 @@ class Render {
     const data = [winsLosses.wins, winsLosses.losses, winsLosses.overtime]
 
     const newMyChartEl = document.createElement('canvas')
-    if (window.innerWidth > 1100) {
-      newMyChartEl.setAttribute('height', '150')
-    } else if (window.innerWidth > 800) {
-      newMyChartEl.setAttribute('height', '200')
-    } else {
-      newMyChartEl.setAttribute('height', '500')
-    }
-    newMyChartEl.setAttribute('width', '400')
+    newMyChartEl.setAttribute('height', '250')
 
     // Displays an error which I cannot get around
     newMyChart = new Chart(newMyChartEl, {

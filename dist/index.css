@@ -1,5 +1,11 @@
 body {
   background-color: #fffafa;
+  margin: 0;
+}
+
+.body-grid {
+  display: grid;
+  grid-template-columns: 0.1fr 1fr;
 }
 
 #choose-team-screen {
@@ -30,11 +36,23 @@ body {
 }
 
 #team-screen {
+  padding: 10px;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 #team-screen div {
   display: grid;
+}
+#team-screen::before {
+  content: "";
+  height: 420px;
+  z-index: -1;
+  width: 100%;
+  left: 0;
+  top: 0;
+  background-color: #797A9E;
+  position: absolute;
 }
 
 #settings-button {
@@ -134,7 +152,7 @@ body {
 }
 
 .btn {
-  background-color: #FF7F11;
+  background-color: #ff7f11;
   border: 1px solid #101d42;
   border-radius: 5px;
   margin-top: 20px;
@@ -155,22 +173,12 @@ body {
   }
 }
 @media screen and (min-width: 1000px) {
-  .game-list {
-    padding-left: 400px;
-    padding-right: 400px;
-  }
-
   #choose-team-screen {
     padding-left: 400px;
     padding-right: 400px;
   }
 }
 @media screen and (min-width: 1500px) {
-  .game-list {
-    padding-left: 600px;
-    padding-right: 600px;
-  }
-
   #choose-team-screen {
     padding-left: 600px;
     padding-right: 600px;
